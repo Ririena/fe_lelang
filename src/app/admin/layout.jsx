@@ -1,13 +1,12 @@
 import NavbarAdmin from "@/components/ui/navigations/NavbarAdmin";
-
-const AdminLayot = ({children}) => {
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AdminSidebar } from "@/components/admin/admin-sidebar";
+const AdminLayout = ({children}) => {
   return (
     <>
-      <NavbarAdmin />
-
-      <main className="container mx-auto px-4">{children}</main>
+    <main>{children}</main>
     </>
   );
 };
 
-export default AdminLayot;
+export default AdminLayout;
