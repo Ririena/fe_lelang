@@ -1,0 +1,34 @@
+name: Next.js Development Workflow (Bun)
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  bun-next-dev:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Install Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest  
+
+      - name: 📦 Install Dependencies with Bun
+        run: bun install
+
+      - name: 🧼 Lint
+        run: bun run lint
+
+      - name: 🧪 Run Tests
+        run: bun run test
+
+      - name: 🏗️ Build Project
+        run: bun run build
