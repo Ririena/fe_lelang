@@ -3,10 +3,10 @@ name: Next.js Development Workflow (Bun)
 on:
   push:
     branches:
-      - dev
+      - main
   pull_request:
     branches:
-      - dev
+      - main
 
 jobs:
   bun-next-dev:
