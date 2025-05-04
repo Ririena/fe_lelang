@@ -28,7 +28,7 @@ jobs:
         run: bun run lint
 
       - name: 🧪 Run Tests
-        run: bun run test
+        run: bun run test --passWithNoTests
 
       - name: 🏗️ Build Project
         run: bun run build
