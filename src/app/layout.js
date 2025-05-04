@@ -2,17 +2,16 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Noto_Sans } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
+import { AuthProvider } from "@/context/AuthContext";
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
   subsets: ["latin"],
-
-})
+});
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
   subsets: ["latin"],
-})
-
+});
 
 export const metadata = {
   title: "Create Next App",
@@ -22,11 +21,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${notoSans.variable} ${notoSansJP} antialiased`} suppressHydrationWarning={true}
-      >
-        {children}
-      </body>
+      <AuthProvider>
+        <body
+          className={`${notoSans.variable} ${notoSansJP} antialiased`}
+          suppressHydrationWarning={true}
+        >
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }

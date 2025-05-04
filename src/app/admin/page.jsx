@@ -17,7 +17,7 @@ const AdminPage = () => {
           </p>
           <Button variant="orange">Tambah Lelang</Button>
         </div>
-        <section className="grid grid-cols-4 mt-4 gap-20 rounded">
+        <section className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3  xl:grid-cols-4 mt-4 gap-20 rounded">
           <StatisticCard title="Total User" value="100" icon="👤" />
           <StatisticCard title="Total Petugas" value="100" icon="👤" />
           <StatisticCard title="Total Barang" value="100" icon="👤" />

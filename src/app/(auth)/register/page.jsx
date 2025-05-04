@@ -3,11 +3,46 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Eye, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-
+import axios from "axios";
+import { useState } from "react";
+import { Form } from "@/components/ui/form";
 const RegisterPage = () => {
   const router = useRouter();
+  const [registerForm, setRegisterForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handlechange = (e) => {
+    setRegisterForm({
+      ...registerForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await axios.post(
+      "https://belelang.vercel.app/register",
+      registerForm,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (res.error) {
+      console.error(res.error);
+    } else {
+      router.push("/login")
+    }
+
+    console.log("Berhasil");
+  };
 
   const isHaveAccount = () => {
     router.push("/login");
@@ -42,18 +77,33 @@ const RegisterPage = () => {
               </h2>
             </CardHeader>
             <CardContent>
-              <Label className="text-md font-semibold">Username</Label>
-              <Input placeholder="Enter Your Username" />
-              <Label className="text-md font-semibold mt-2">Password</Label>
-              <Input placeholder="Enter Your Password" />
-              <Label className="text-md font-semibold mt-2">
-                Confirm Password
-              </Label>
-              <Input placeholder="Enter Your Password Again" />
-           
-              <Button variant="orange" className="mt-6 w-full">
-                Register
-              </Button>
+              <form onSubmit={handleSubmit}>
+                <Label className="text-md font-semibold">Username</Label>
+                <Input
+                  name="username"
+                  onChange={handlechange}
+                  placeholder="Enter Your Username"
+                  icon={<User size={18} />}
+                />
+                <Label className="text-md font-semibold mt-2">Password</Label>
+                <Input
+                  placeholder="Enter Your Password"
+                  name="password"
+                  onChange={handlechange}
+                  icon={<Eye size={18} />}
+                />
+                <Label className="text-md font-semibold mt-2">
+                  Confirm Password
+                </Label>
+                <Input
+                  placeholder="Enter Your Password Again"
+                  icon={<Eye size={18} />}
+                />
+
+                <Button type="submit" variant="orange" className="mt-6 w-full">
+                  Register
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>

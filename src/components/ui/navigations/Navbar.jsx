@@ -18,7 +18,7 @@ const Navbar = () => {
                 Home
               </Link>
               <Link
-                href="#"
+                href="/lelang"
                 className="text-sm font-medium hover:text-orange-500 transition-colors"
               >
                 Auctions
