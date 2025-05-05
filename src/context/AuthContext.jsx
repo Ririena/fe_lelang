@@ -5,6 +5,7 @@ import {createContext, useContext, useEffect, useState} from 'react'
 const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
+    const [loading, setLoading] = useState(true)
     const [auth, setAuth] = useState({
         token: null,
         user: null,
@@ -20,6 +21,7 @@ export const AuthProvider = ({children}) => {
                 user: JSON.parse(user)
             })
         }
+        setLoading(false)
     },[])
 
     const login = (token, user) => {
@@ -36,7 +38,7 @@ export const AuthProvider = ({children}) => {
 
     return (
         <>
-        <AuthContext.Provider value={{...auth, login, logout}}>
+        <AuthContext.Provider value={{...auth, login, logout, loading}}>
             {children}
         </AuthContext.Provider>
         </>

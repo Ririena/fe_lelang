@@ -3,6 +3,7 @@ import "./globals.css";
 import { Noto_Sans } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
+import RoleAccessProvider from "@/middleware/RoleAccessProvider";
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
   subsets: ["latin"],
@@ -22,12 +23,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <AuthProvider>
-        <body
-          className={`${notoSans.variable} ${notoSansJP} antialiased`}
-          suppressHydrationWarning={true}
-        >
-          {children}
-        </body>
+        <RoleAccessProvider>
+          <body
+            className={`${notoSans.variable} ${notoSansJP} antialiased`}
+            suppressHydrationWarning={true}
+          >
+            {children}
+          </body>
+        </RoleAccessProvider>
       </AuthProvider>
     </html>
   );
