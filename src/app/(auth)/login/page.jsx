@@ -8,6 +8,7 @@ import { Eye, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
+
 const LoginPage = () => {
   const router = useRouter();
 
@@ -43,17 +44,14 @@ const LoginPage = () => {
     router.push("/register");
     return;
   };
+
   return (
     <>
-      <main className="flex justify-center items-center h-screen   px-4 py-8">
-        <div>
+      <main className="flex justify-center items-center h-screen px-4 py-8">
+        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg">
           <div className="mx-auto text-center">
-            <h1 className="text-3xl text-orange-500 font-semibold">
-              Tawarin.com
-            </h1>
-            <h2 className="text-2xl text-black font-semibold">
-              Login in to your account
-            </h2>
+            <h1 className="text-3xl text-orange-500 font-semibold">Tawarin.com</h1>
+            <h2 className="text-2xl text-black font-semibold">Login in to your account</h2>
             <p className="text-lg font-light">
               Or{" "}
               <span
@@ -64,11 +62,11 @@ const LoginPage = () => {
               </span>
             </p>
           </div>
-          <Card className="w-[450px] mt-8">
+          <Card className="mt-8">
             <CardHeader>
-              <h1 className="text-lg font-semibold">Register</h1>
+              <h1 className="text-lg font-semibold">Login</h1>
               <h2 className="text-md font-extralight">
-                Enter your credentials to access your accounts
+                Enter your credentials to access your account
               </h2>
             </CardHeader>
             <CardContent>
@@ -81,10 +79,8 @@ const LoginPage = () => {
                   icon={<User size={18} />}
                 />
                 <div className="flex justify-between mt-2">
-                  <Label className="text-md font-semibold ">Password</Label>
-                  <p className="text-orange-500 font-thin text-md">
-                    Forgot Your Password
-                  </p>
+                  <Label className="text-md font-semibold">Password</Label>
+                  <p className="text-orange-500 font-thin text-md">Forgot Your Password?</p>
                 </div>
                 <Input
                   placeholder="Enter Your Password"

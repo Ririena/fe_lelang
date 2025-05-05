@@ -10,6 +10,8 @@ import { supabase } from "@/lib/supabase";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
+import ItemTables from "@/components/admin/items/item-tables";
+import { Input } from "@/components/ui/input";
 const AdminPageItems = () => {
   const [formData, setFormData] = useState({
     nama_barang: "",
@@ -55,12 +57,12 @@ const AdminPageItems = () => {
           nama_barang: formData.nama_barang,
           harga_awal: formData.harga_awal,
           deskripsi: formData.deskripsi,
-          gambar: image_url
+          gambar: image_url,
         },
         {
           headers: {
-            'Authorization': `bearer ${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -86,48 +88,62 @@ const AdminPageItems = () => {
       <SidebarInset>
         <HeadersInsets />
         <main className="flex-1 p-6">
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 max-w-md mx-auto"
-          >
-            <input
-              type="text"
-              name="nama_barang"
-              placeholder="Nama Barang"
-              value={formData.nama_barang}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="number"
-              name="harga_awal"
-              placeholder="Harga Awal"
-              value={formData.harga_awal}
-              onChange={handleChange}
-              required
-            />
-            <textarea
-              name="deskripsi"
-              placeholder="Deskripsi"
-              value={formData.deskripsi}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="file"
-              name="gambar"
-              accept="image/*"
-              onChange={handleChange}
-              required
-            />
-            <button type="submit" disabled={loading}>
-              {loading ? "Uploading..." : "Submit"}
-            </button>
-          </form>
+          <div className="flex justify-between">
+            <h1 className="text-xl font-semibold">Data Users</h1>
+            <Button variant="orange">Add New Item</Button>
+          </div>
+          <Input placeholder="Search Barang" className="w-md" />
+          <ItemTables />
         </main>
+        {/* <ItemForm/> */}
       </SidebarInset>
     </SidebarProvider>
   );
 };
 
 export default AdminPageItems;
+
+// const ItemForm = (handleSubmit, formData, handleChange) => {
+//   return (
+//     <>
+//       <form
+//         onSubmit={handleSubmit}
+//         className="flex flex-col gap-4 max-w-md mx-auto"
+//       >
+//         <input
+//           type="text"
+//           name="nama_barang"
+//           placeholder="Nama Barang"
+//           value={formData.nama_barang}
+//           onChange={handleChange}
+//           required
+//         />
+//         <input
+//           type="number"
+//           name="harga_awal"
+//           placeholder="Harga Awal"
+//           value={formData.harga_awal}
+//           onChange={handleChange}
+//           required
+//         />
+//         <textarea
+//           name="deskripsi"
+//           placeholder="Deskripsi"
+//           value={formData.deskripsi}
+//           onChange={handleChange}
+//           required
+//         />
+//         <input
+//           type="file"
+//           name="gambar"
+//           accept="image/*"
+//           onChange={handleChange}
+//           required
+//         />
+//         <button type="submit" disabled={loading}>
+//           {loading ? "Uploading..." : "Submit"}
+//         </button>
+//       </form>
+//     </>
+//   );
+// };

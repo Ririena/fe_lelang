@@ -7,7 +7,7 @@ import { Eye, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
-import { Form } from "@/components/ui/form";
+
 const RegisterPage = () => {
   const router = useRouter();
   const [registerForm, setRegisterForm] = useState({
@@ -38,7 +38,7 @@ const RegisterPage = () => {
     if (res.error) {
       console.error(res.error);
     } else {
-      router.push("/login")
+      router.push("/login");
     }
 
     console.log("Berhasil");
@@ -50,8 +50,8 @@ const RegisterPage = () => {
 
   return (
     <>
-      <main className="flex justify-center items-center h-screen   px-4 py-8">
-        <div>
+      <main className="flex justify-center items-center h-screen px-4 py-8">
+        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg">
           <div className="mx-auto text-center">
             <h1 className="text-3xl text-orange-500 font-semibold">
               Tawarin.com
@@ -69,7 +69,7 @@ const RegisterPage = () => {
               </span>
             </p>
           </div>
-          <Card className="w-[450px] mt-8">
+          <Card className="mt-8">
             <CardHeader>
               <h1 className="text-lg font-semibold">Register</h1>
               <h2 className="text-md font-extralight">

@@ -1,6 +1,7 @@
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { DashboardContent } from "@/components/admin/dashboard-content";
 import HeadersInsets from "@/components/admin/headers-inset";
+import UserTables from "@/components/admin/users/user-tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,9 +25,12 @@ export default function PageAdminUser() {
               Add New Users
             </Button>
           </div>
-          <Input className="w-md rounded-md mt-6" placeholder="Search Users..." />
+          <Input
+            className="w-md rounded-md mt-6"
+            placeholder="Search Users..."
+          />
 
-          
+          <UserTables className=""/>
         </main>
       </SidebarInset>
     </SidebarProvider>

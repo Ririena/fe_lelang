@@ -27,16 +27,16 @@ export default function RoleAccessProvider({ children }) {
       rule.paths.some(path => pathname.startsWith(path))
     )
 
+    if (rule) {
+    
 
-    if (!token || !user) {
-      router.replace('/login')
-      return
-    }
-
-    if (rule && !rule.allowRoles.includes(user.role)) {
-      router.replace('/not-authorized')
+      if (!token || !user || !user.role || !rule.allowRoles.includes(user.role)) {
+        router.replace(!token || !user ? '/login' : '/not-authorized')
+        return
+      }
     }
   }, [pathname, user, token, router, loading])
+
 
   return children
 }
