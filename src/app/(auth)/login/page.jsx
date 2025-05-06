@@ -8,6 +8,7 @@ import { Eye, User } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -34,7 +35,13 @@ const LoginPage = () => {
       );
 
       login(res.data.token, res.data.user);
-      console.log("Success");
+      toast("Login Berhasil", {
+        description: <span className="text-gray-600"> akan dialihkan ke halaman utama</span>,
+        position: "top-center",
+      });
+
+      setTimeout(2000)
+      router.push("/")
     } catch (error) {
       console.error(error.response?.data?.message || "Login Failed");
     }
@@ -50,8 +57,12 @@ const LoginPage = () => {
       <main className="flex justify-center items-center h-screen px-4 py-8">
         <div className="w-full max-w-sm sm:max-w-md md:max-w-lg">
           <div className="mx-auto text-center">
-            <h1 className="text-3xl text-orange-500 font-semibold">Tawarin.com</h1>
-            <h2 className="text-2xl text-black font-semibold">Login in to your account</h2>
+            <h1 className="text-3xl text-orange-500 font-semibold">
+              Tawarin.com
+            </h1>
+            <h2 className="text-2xl text-black font-semibold">
+              Login in to your account
+            </h2>
             <p className="text-lg font-light">
               Or{" "}
               <span
@@ -80,7 +91,9 @@ const LoginPage = () => {
                 />
                 <div className="flex justify-between mt-2">
                   <Label className="text-md font-semibold">Password</Label>
-                  <p className="text-orange-500 font-thin text-md">Forgot Your Password?</p>
+                  <p className="text-orange-500 font-thin text-md">
+                    Forgot Your Password?
+                  </p>
                 </div>
                 <Input
                   placeholder="Enter Your Password"

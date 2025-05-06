@@ -7,9 +7,11 @@ import { Eye, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const RegisterPage = () => {
   const router = useRouter();
+  
   const [registerForm, setRegisterForm] = useState({
     username: "",
     password: "",
@@ -41,7 +43,9 @@ const RegisterPage = () => {
       router.push("/login");
     }
 
-    console.log("Berhasil");
+    toast("Register Berhasil, Silahkan Login", {
+      position: "top-center"
+    })
   };
 
   const isHaveAccount = () => {

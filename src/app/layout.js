@@ -4,6 +4,7 @@ import { Noto_Sans } from "next/font/google";
 import { Noto_Sans_JP } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import RoleAccessProvider from "@/middleware/RoleAccessProvider";
+import { Toaster } from "@/components/ui/sonner";
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
             suppressHydrationWarning={true}
           >
             {children}
+          <Toaster/>
           </body>
         </RoleAccessProvider>
       </AuthProvider>

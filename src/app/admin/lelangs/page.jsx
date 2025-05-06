@@ -5,6 +5,7 @@ import HeadersInsets from "@/components/admin/headers-inset";
 import { SidebarInset } from "@/components/ui/sidebar"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import LelangTable from "@/components/admin/lelangs/lelang-tables";
 const AdminPageLelang = () => {
   return (
     <>
@@ -18,6 +19,7 @@ const AdminPageLelang = () => {
             <Button variant="orange">Add New Lelang</Button>
           </div>
           <Input placeholder="Search Lelang" className="w-md" />
+          <LelangTable/>
         </main>
         {/* <ItemForm/> */}
       </SidebarInset>
