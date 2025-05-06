@@ -27,27 +27,27 @@ import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
-const userDatas = [
-  {
-    id: 1,
-    username: "Sayuti Melik",
-    role: "admin",
-  },
-  {
-    id: 2,
-    username: "Adlin",
-    role: "petugas",
-  },
-  {
-    id: 3,
-    username: "Ariena",
-    role: "masyarakat",
-  },
-];
 
 export default function UserTables() {
   const [dataUser, setDataUser] = useState([]);
   const { token, loading } = useAuth();
+
+
+  const handleDelete = async(id) => {
+    try {
+      const res =  await axios.delete(`http://localhost:3001/users/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if(res) {
+        alert("Data Sucessfully Deleted")
+      }
+    } catch(error) {
+      console.error(error.message)
+    }
+  }
 
   async function init() {
     try {
@@ -112,7 +112,7 @@ export default function UserTables() {
                           <DropdownMenuItem className="cursor-pointer">
                             Edit User
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer">
+                          <DropdownMenuItem className="cursor-pointer" onClick={() => handleDelete(user.id_user)}>
                             Delete User Detail
                           </DropdownMenuItem>
                         </DropdownMenuContent>
