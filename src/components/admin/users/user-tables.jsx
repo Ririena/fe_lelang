@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   DropdownMenu,
@@ -23,6 +24,9 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 const userDatas = [
   {
     id: 1,
@@ -42,6 +46,32 @@ const userDatas = [
 ];
 
 export default function UserTables() {
+  const [dataUser, setDataUser] = useState([]);
+  const { token, loading } = useAuth();
+
+  async function init() {
+    try {
+      const res = await axios.get("http://localhost:3001/users", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!loading) {
+        console.table(res.data.data);
+        setDataUser(res.data.data);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  useEffect(() => {
+    if (!loading) {
+      init();
+    }
+  }, [token, loading]);
   return (
     <>
       <main className="mt-12">
@@ -57,10 +87,10 @@ export default function UserTables() {
             </TableHeader>
 
             <TableBody>
-              {userDatas.map((user) => {
+              {dataUser.map((user) => {
                 return (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
+                  <TableRow key={user.id_user}>
+                    <TableCell>{user.id_user}</TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>{user.role}</TableCell>
                     <TableCell>
@@ -72,11 +102,19 @@ export default function UserTables() {
                         <DropdownMenuContent className="w-56">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <Separator />
-                          <DropdownMenuItem className="cursor-pointer">Copy user ID</DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Copy user ID
+                          </DropdownMenuItem>
                           <Separator />
-                          <DropdownMenuItem className="cursor-pointer">View User Detail</DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer">Edit User</DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer">Delete User Detail</DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            View User Detail
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Edit User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="cursor-pointer">
+                            Delete User Detail
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

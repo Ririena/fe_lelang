@@ -15,6 +15,7 @@ const RegisterPage = () => {
   const [registerForm, setRegisterForm] = useState({
     username: "",
     password: "",
+    password_confirmation: "",
   });
 
   const handlechange = (e) => {
@@ -100,6 +101,8 @@ const RegisterPage = () => {
                   Confirm Password
                 </Label>
                 <Input
+                name="password_confirmation"
+                onChange={handlechange}
                   placeholder="Enter Your Password Again"
                   icon={<Eye size={18} />}
                 />

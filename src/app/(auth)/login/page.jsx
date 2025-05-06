@@ -34,14 +34,20 @@ const LoginPage = () => {
         }
       );
 
-      login(res.data.token, res.data.user);
+      await login(res.data.token);
       toast("Login Berhasil", {
-        description: <span className="text-gray-600"> akan dialihkan ke halaman utama</span>,
+        description: (
+          <span className="text-gray-600">
+            {" "}
+            akan dialihkan ke halaman utama
+          </span>
+        ),
         position: "top-center",
       });
 
-      setTimeout(2000)
-      router.push("/")
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (error) {
       console.error(error.response?.data?.message || "Login Failed");
     }

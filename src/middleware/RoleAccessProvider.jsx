@@ -28,15 +28,13 @@ export default function RoleAccessProvider({ children }) {
     )
 
     if (rule) {
-    
-
       if (!token || !user || !user.role || !rule.allowRoles.includes(user.role)) {
         router.replace(!token || !user ? '/login' : '/not-authorized')
-        return
       }
+    } else if (!token) {
+      router.replace('/login')
     }
   }, [pathname, user, token, router, loading])
-
 
   return children
 }
