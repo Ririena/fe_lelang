@@ -1,19 +1,5 @@
 import React from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -33,10 +19,10 @@ const LelangTable = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>ID Lelang</TableHead>
-                <TableHead>Harga_Akhir</TableHead>
                 <TableHead>ID Barang</TableHead>
-                <TableHead>Berakhir Dalam</TableHead>
                 <TableHead>ID_Pemenang</TableHead>
+                <TableHead>Harga_Akhir</TableHead>
+                <TableHead>Berakhir Dalam</TableHead>
                 <TableHead>Aksi</TableHead>
               </TableRow>
             </TableHeader>

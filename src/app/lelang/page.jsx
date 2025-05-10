@@ -1,12 +1,47 @@
+"use client";
 import * as React from "react";
-import Image from "next/image"
-import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search } from "lucide-react"
-
+import Image from "next/image";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search } from "lucide-react";
+import { useState } from "react";
+import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 const PageLelang = () => {
+  const [lelangData, setLelangData] = useState([]);
+  const [profile, setProfile] = useState("");
+  const { token, loading } = useAuth();
+  async function init() {
+    try {
+      const res = await axios.get("http://localhost:3001/v2/items", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!loading) {
+        console.table(res.data.data);
+        setLelangData(res.data.data);
+      }
+    } catch (error) {
+      console.error("Gagal memuat data:", error.message);
+      setLelangData([]);
+    }
+  }
+
+  React.useEffect(() => {
+    if (!loading) {
+      init();
+    }
+  }, [loading]);
+
   const products = Array(9).fill({
     title: "Visual Novel VE",
     price: "Rp 125.000",
@@ -33,7 +68,7 @@ const PageLelang = () => {
                 className="border rounded-md overflow-hidden bg-white"
               >
                 <Link href={`/product/${index}`}>
-                <div className="bg-gray-100 sm:h-48 md:h-60 overflow-hidden">
+                  <div className="bg-gray-100 sm:h-48 md:h-60 overflow-hidden">
                     <Image
                       src={product.image || "/placeholder.svg"}
                       alt={product.title}
@@ -103,16 +138,16 @@ const PageLelang = () => {
               </Select>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
-              {products.slice(3).map((product, index) => (
+              {lelangData.map((lelang) => (
                 <div
-                  key={`product-${index}`}
+                  key={`${lelang.id_barang}`}
                   className="border rounded-md overflow-hidden bg-white"
                 >
-                  <Link href={`/product/${index + 3}`}>
-                  <div className="bg-gray-100 w-full h-40 sm:h-48 md:h-60 overflow-hidden">
+                  <Link href={`/lelang/${lelang.id_lelang}`}>
+                    <div className="bg-gray-100 w-full h-40 sm:h-48 md:h-60 overflow-hidden">
                       <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.title}
+                        src={lelang.gambar || "/placeholder.svg"}
+                        alt={lelang.nama_barang}
                         width={200}
                         height={200}
                         className="w-full h-full object-cover"
@@ -120,14 +155,16 @@ const PageLelang = () => {
                     </div>
                   </Link>
                   <div className="p-3">
-                    <Link href={`/product/${index + 3}`}>
-                      <h3 className="font-medium">{product.title}</h3>
+                    <Link href={`/lelang/${lelang.id_lelang}`}>
+                      <h3 className="font-medium">{lelang.nama_barang}</h3>
                     </Link>
                     <p className="text-xs text-gray-500">Tawaran saat ini</p>
-                    <p className="text-orange-500 font-bold">{product.price}</p>
+                    <p className="text-orange-500 font-bold">
+                      {lelang.harga_awal}
+                    </p>
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-xs text-gray-500">
-                        {product.bids}
+                        {lelang.harga_awal}
                       </span>
                       <Button
                         size="sm"

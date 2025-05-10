@@ -1,3 +1,4 @@
+'use client'
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { DashboardContent } from "@/components/admin/dashboard-content";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -6,6 +7,7 @@ import { SidebarInset } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LelangTable from "@/components/admin/lelangs/lelang-tables";
+import LelangFormDialog from "@/components/admin/lelangs/lelang-form-dialog";
 const AdminPageLelang = () => {
   return (
     <>
@@ -16,7 +18,7 @@ const AdminPageLelang = () => {
         <main className="flex-1 p-6">
           <div className="flex justify-between">
             <h1 className="text-xl font-semibold">Data Lelang</h1>
-            <Button variant="orange">Add New Lelang</Button>
+            <LelangFormDialog/>
           </div>
           <Input placeholder="Search Lelang" className="w-md" />
           <LelangTable/>

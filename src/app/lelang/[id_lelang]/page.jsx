@@ -16,6 +16,7 @@ const DetailLelangPage = () => {
   const [detailData, setDetailData] = useState("");
   const [detailDataBarang, setDetailDataBarang] = useState("");
   const { token, loading } = useAuth();
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   async function init() {
     try {
@@ -43,17 +44,22 @@ const DetailLelangPage = () => {
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setIsPageLoading(false);
     }
   }
 
   async function getBarang(id_barang) {
     try {
-      const res = await axios.get(`http://localhost:3001/v2/items/${id_barang}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get(
+        `http://localhost:3001/v2/items/${id_barang}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!loading) {
         console.table(res.data.data);
@@ -61,6 +67,8 @@ const DetailLelangPage = () => {
       }
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setIsPageLoading(false);
     }
   }
 
@@ -69,6 +77,14 @@ const DetailLelangPage = () => {
       init();
     }
   }, [token, loading]);
+
+  if (isPageLoading || loading) {
+    return (
+      <main className="p-4">
+        <h1 className="text-xl font-semibold mt-12">Loading data lelang...</h1>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -81,7 +97,11 @@ const DetailLelangPage = () => {
           <div className="max-w-lg w-full bg-white rounded-lg shadow-lg">
             <Image
               className="w-full h-auto object-cover rounded-t-lg"
-              src="/auction-landing.jpg"
+              src={
+                detailDataBarang.gambar
+                  ? `${detailDataBarang.gambar}`
+                  : "/path/to/fallback-image.jpg"
+              }
               alt="Violet Evergarden Auction"
               width={550}
               height={300}
@@ -140,13 +160,13 @@ const DetailLelangPage = () => {
                   </h3>
                   <div className="flex items-center gap-3 p-3 border rounded-lg bg-white shadow-sm">
                     <div className="relative">
-                      <Image
+                      {/* <Image
                         src={"/asd.png" || "/placeholder.svg"}
                         alt={`Avatar`}
                         width={48}
                         height={48}
                         className="rounded-full object-cover border-2 border-primary/20"
-                      />
+                      /> */}
                     </div>
                     <div>
                       <h1 className="font-medium">YangYuelin</h1>
