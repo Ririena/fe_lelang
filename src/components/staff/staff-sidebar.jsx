@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 import {
   BarChart3,
   Calendar,
@@ -24,10 +24,10 @@ import {
   Settings,
   ShoppingCart,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-import Link from "next/link"
-export function AdminSidebar() {
+import Link from "next/link";
+export function StaffSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
@@ -69,7 +69,7 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/users">
+                  <Link href="/staff/users">
                     <Users className="h-4 w-4" />
                     <span>Users</span>
                   </Link>
@@ -77,7 +77,7 @@ export function AdminSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/items">
+                  <Link href="/staff/items">
                     <ShoppingCart className="h-4 w-4" />
                     <span>Items</span>
                   </Link>
@@ -85,7 +85,7 @@ export function AdminSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/lelangs">
+                  <Link href="/staff/lelangs">
                     <FileText className="h-4 w-4" />
                     <span>Auctions</span>
                   </Link>
@@ -123,7 +123,10 @@ export function AdminSidebar() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Avatar" />
+              <AvatarImage
+                src="/placeholder.svg?height=32&width=32"
+                alt="Avatar"
+              />
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div>
@@ -139,5 +142,5 @@ export function AdminSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -54,7 +54,7 @@
 //   );
 // };
 
-import { AdminDashboard } from "@/components/admin/admin-dashboard";
+
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { DashboardContent } from "@/components/admin/dashboard-content";
 import { SidebarProvider } from "@/components/ui/sidebar";

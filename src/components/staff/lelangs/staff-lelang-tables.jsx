@@ -1,17 +1,12 @@
 "use client";
+
 import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -23,7 +18,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Table,
@@ -39,32 +33,31 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserTables({ onUserAdded, trigger }) {
-  const [dataUser, setDataUser] = useState([]);
+export function StaffLelangTables({ trigger }) {
+  const [dataLelang, setDataLelang] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedLelang, setSelectedLelang] = useState(null);
   const { token, loading } = useAuth();
 
- const handleDelete = async (id) => {
-  try {
-    const res = await axios.delete(`http://localhost:3001/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`http://localhost:3001/lelangs/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (res) {
-      setDataUser((prev) => prev.filter((user) => user.id_user !== id));
+      if (res) {
+        setDataLelang((prev) => prev.filter((lelang) => lelang.id_lelang !== id));
+      }
+    } catch (error) {
+      console.error(error.message);
     }
-  } catch (error) {
-    console.error(error.message);
-  }
-};
-
+  };
 
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/users", {
+      const res = await axios.get("http://localhost:3001/lelangs", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -72,8 +65,7 @@ export default function UserTables({ onUserAdded, trigger }) {
       });
 
       if (!loading) {
-        console.table(res.data.data);
-        setDataUser(res.data.data);
+        setDataLelang(res.data.data);
       }
     } catch (error) {
       console.error(error.message);
@@ -85,12 +77,6 @@ export default function UserTables({ onUserAdded, trigger }) {
       init();
     }
   }, [token, loading, trigger]);
-  
-  useEffect(() => {
-    if (onUserAdded) {
-      init();
-    }
-  }, [onUserAdded]);
 
   return (
     <>
@@ -99,20 +85,28 @@ export default function UserTables({ onUserAdded, trigger }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">UID</TableHead>
-                <TableHead>Username</TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead className="w-[100px]">ID</TableHead>
+                <TableHead>Item</TableHead>
+                <TableHead>Start Price</TableHead>
+                <TableHead>Current Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Start Date</TableHead>
+                <TableHead>End Date</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {dataUser.map((user) => {
+              {dataLelang.map((lelang) => {
                 return (
-                  <TableRow key={user.id_user}>
-                    <TableCell>{user.id_user}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.role}</TableCell>
+                  <TableRow key={lelang.id_lelang}>
+                    <TableCell>{lelang.id_lelang}</TableCell>
+                    <TableCell>{lelang.item_name}</TableCell>
+                    <TableCell>Rp {lelang.start_price.toLocaleString()}</TableCell>
+                    <TableCell>Rp {lelang.current_price.toLocaleString()}</TableCell>
+                    <TableCell>{lelang.status}</TableCell>
+                    <TableCell>{new Date(lelang.start_date).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(lelang.end_date).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <span className="sr-only">Open menu</span>
@@ -123,19 +117,15 @@ export default function UserTables({ onUserAdded, trigger }) {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <Separator />
                           <DropdownMenuItem className="cursor-pointer">
-                            Copy user ID
-                          </DropdownMenuItem>
-                          <Separator />
-                          <DropdownMenuItem className="cursor-pointer">
-                            View User Detail
+                            View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem className="cursor-pointer">
-                            Edit User
+                            Edit Auction
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onSelect={(e) => {
                               e.preventDefault();
-                              setSelectedUser(user.id_user);
+                              setSelectedLelang(lelang.id_lelang);
                               setOpenDialog(true);
                             }}
                             className="cursor-pointer"
@@ -154,23 +144,23 @@ export default function UserTables({ onUserAdded, trigger }) {
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  Apakah Anda yakin ingin mendelete nya?
+                  Are you sure you want to delete this auction?
                 </AlertDialogTitle>
                 <AlertDialogDescription>
-                  Aksi Anda saat ini bisa dibatalkan kalau anda mau.
+                  This action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setOpenDialog(false)}>
-                  Batal
+                  Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    handleDelete(selectedUser);
+                    handleDelete(selectedLelang);
                     setOpenDialog(false);
                   }}
                 >
-                  Ya, Hapus
+                  Delete
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -179,4 +169,4 @@ export default function UserTables({ onUserAdded, trigger }) {
       </main>
     </>
   );
-}
+} 
