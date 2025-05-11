@@ -29,24 +29,48 @@ const LelangFormDialog = () => {
   const [loadingData, setLoadingData] = useState(true);
   const { user, token, loading } = useAuth();
   console.log(user);
-  async function getBarang() {
-    try {
-      const res = await axios.get("http://localhost:3001/v2/items", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+ async function getBarang() {
+  try {
+    // Fetch all items
+    const resBarang = await axios.get("http://localhost:3001/v2/items", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      const items = res.data.data;
+    // Fetch all active auctions
+    const resLelang = await axios.get("http://localhost:3001/auctions", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-      console.log(items);
-      setDataBarang(items);
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setLoadingData(false);
-    }
+    const semuaBarang = resBarang.data.data;
+    const semuaLelang = resLelang.data.data;
+
+    console.log("Semua Barang:", semuaBarang); // Debug
+    console.log("Semua Lelang Aktif:", semuaLelang); // Debug
+
+    // Get all `id_barang` from active auctions
+    const idBarangLelangAktif = semuaLelang.map((lelang) => lelang.id_barang);
+
+    console.log("Barang yang sedang dilelang:", idBarangLelangAktif); // Debug
+
+    // Filter items that are not associated with any active auction
+    const barangTersedia = semuaBarang.filter(
+      (barang) => !idBarangLelangAktif.includes(barang.id_barang)
+    );
+
+    console.log("Barang yang tersedia untuk lelang:", barangTersedia); // Debug
+
+    // Update the state with the filtered items
+    setDataBarang(barangTersedia);
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    setLoadingData(false);
   }
+}
 
   useEffect(() => {
     if (!loading) getBarang();

@@ -9,76 +9,87 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 const DetailLelangPage = () => {
   const { id_lelang } = useParams();
+  const [hargaPenawaran, setHargaPenawaran] = useState("");
   const [detailData, setDetailData] = useState("");
   const [detailDataBarang, setDetailDataBarang] = useState("");
   const { token, loading } = useAuth();
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState("");
   async function init() {
-  try {
-    const res = await axios.get(
-      `http://localhost:3001/auctions/${id_lelang}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/auctions/${id_lelang}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (!res) {
-      console.error(res);
+      if (!res) {
+        console.error(res);
+        return;
+      }
+
+      if (!loading) {
+        const data = res.data.data;
+        setDetailData(data);
+        console.table(data);
+
+        if (data.id_barang) {
+          getBarang(data.id_barang); // Ensure id_barang exists before calling getBarang
+        } else {
+          console.error("id_barang is undefined or missing");
+        }
+      }
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setIsPageLoading(false);
+    }
+  }
+
+  async function getBarang(id_barang) {
+    if (!id_barang) {
+      console.error("id_barang is invalid");
       return;
     }
 
-    if (!loading) {
-      const data = res.data.data;
-      setDetailData(data);
-      console.table(data);
+    try {
+      const res = await axios.get(
+        `http://localhost:3001/v2/items/${id_barang}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (data.id_barang) {
-        getBarang(data.id_barang); // Ensure id_barang exists before calling getBarang
-      } else {
-        console.error("id_barang is undefined or missing");
+      if (!loading) {
+        console.table(res.data.data);
+        setDetailDataBarang(res.data.data);
       }
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setIsPageLoading(false);
     }
-  } catch (error) {
-    console.error(error.message);
-  } finally {
-    setIsPageLoading(false);
   }
-}
-
-async function getBarang(id_barang) {
-  if (!id_barang) {
-    console.error("id_barang is invalid");
-    return;
-  }
-
-  try {
-    const res = await axios.get(
-      `http://localhost:3001/v2/items/${id_barang}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (!loading) {
-      console.table(res.data.data);
-      setDetailDataBarang(res.data.data);
-    }
-  } catch (error) {
-    console.error(error.message);
-  } finally {
-    setIsPageLoading(false);
-  }
-}
-
 
   useEffect(() => {
     if (!loading && token) {
@@ -131,6 +142,38 @@ async function getBarang(id_barang) {
       </main>
     );
   }
+
+  const handlePenawaran = async (e) => {
+    e.preventDefault();
+
+    if (!hargaPenawaran || isNaN(hargaPenawaran)) {
+      return alert("Masukkan harga penawaran yang valid.");
+    }
+
+    try {
+      const res = await axios.post(
+        `http://localhost:3001/auctions/${id_lelang}`,
+        {
+          id_lelang: detailData.id_lelang,
+          id_barang: detailData.id_barang,
+          harga_penawaran: parseInt(hargaPenawaran),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Penawaran Berhasil");
+      setHargaPenawaran("");
+      await init();
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   return (
     <>
       <main className="p-4">
@@ -172,16 +215,17 @@ async function getBarang(id_barang) {
                 <div className="flex justify-between">
                   <p className="md:text-lg text-sm">Tawaran Saat Ini</p>
                   <p className="md:text-2xl text-xl text-orange-400 font-semibold">
-                      Rp{" "}
-                      {detailData?.harga_akhir
-                        ? detailData.harga_akhir.toLocaleString("id-ID")
-                        : detailDataBarang?.harga_awal?.toLocaleString("id-ID")}
+                    Rp{" "}
+                    {detailData?.harga_akhir
+                      ? detailData.harga_akhir.toLocaleString("id-ID")
+                      : detailDataBarang?.harga_awal?.toLocaleString("id-ID")}
                   </p>
                 </div>
                 <div className="flex justify-between mt-3">
-                  <p className="md:text-lg text-base font-medium">Total Penawaran: {detailData.total_penawaran}</p>
-                  <p className="md:text-lg text-sm font-light">
+                  <p className="md:text-lg text-base font-medium">
+                    Total Penawaran: {detailData.total_penawaran}
                   </p>
+                  <p className="md:text-lg text-sm font-light"></p>
                 </div>
               </section>
               <section className="mt-3">
@@ -205,11 +249,40 @@ async function getBarang(id_barang) {
                   </p>
                 </div>
 
-                <Input className="mt-4" placeholder="Input Harga Penawaran" />
+                <Input
+                  className="mt-4"
+                  placeholder="Input Harga Penawaran"
+                  onChange={(e) => setHargaPenawaran(e.target.value)}
+                  value={hargaPenawaran}
+                />
 
-                <Button variant="orange" className="text-md mt-4 w-full py-5">
-                  Tawar
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="orange"
+                      className="text-md mt-4 w-full py-5"
+                    >
+                      Tawar
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Apakah Anda yakin ingin menawar?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Penawaran Anda akan disimpan dan tidak dapat dibatalkan.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Batal</AlertDialogCancel>
+                      <AlertDialogAction onClick={handlePenawaran}>
+                        Ya, Tawar Sekarang
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
                 <Separator className="mt-8 border-1 border-black" />
 
                 <div className="mt-6">
