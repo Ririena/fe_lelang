@@ -19,11 +19,23 @@ import { MoreHorizontal } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-export default function ItemTables() {
+export default function ItemTables({ trigger, onItemAdded }) {
   const [dataItems, setDataItems] = useState([]);
-  const { token } = useAuth();
-
+  const { token, loading } = useAuth();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const handleDelete = async (id) => {
     try {
       const res = await axios.delete(`http://localhost:3001/v2/items/${id}`, {
@@ -33,18 +45,14 @@ export default function ItemTables() {
       });
 
       if (res.status === 200) {
-        setDataItems((prevItems) => prevItems.filter(item => item.id_barang !== id));
+        setDataItems((prevItems) =>
+          prevItems.filter((item) => item.id_barang !== id)
+        );
       }
 
       console.log(res.data);
     } catch (error) {
       console.error(error.message);
-    }
-  };
-
-  const handleConfirmDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      handleDelete(id);
     }
   };
 
@@ -57,11 +65,13 @@ export default function ItemTables() {
         },
       });
 
-      if (res.data && res.data.data) {
-        setDataItems(res.data.data);
-        console.log(res.data.data);
-      } else {
-        console.error("No data found in the response");
+      if (!loading) {
+        if (res.data && res.data.data) {
+          setDataItems(res.data.data);
+          console.log(res.data.data);
+        } else {
+          console.error("No data found in the response");
+        }
       }
     } catch (error) {
       console.error("Failed to fetch items:", error.message);
@@ -70,7 +80,13 @@ export default function ItemTables() {
 
   useEffect(() => {
     getAll();
-  }, [token]);
+  }, [token, trigger, loading]);
+
+  useEffect(() => {
+    if (!loading) {
+      getAll();
+    }
+  }, [onItemAdded]);
 
   if (!dataItems.length) {
     return <div>Loading...</div>;
@@ -123,7 +139,11 @@ export default function ItemTables() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer text-red-600"
-                        onClick={() => handleConfirmDelete(data.id_barang)} 
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setSelectedItem(data.id_barang);
+                          setOpenDialog(true);
+                        }}
                       >
                         Delete Barang
                       </DropdownMenuItem>
@@ -134,6 +154,31 @@ export default function ItemTables() {
             ))}
           </TableBody>
         </Table>
+        <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Apakah Anda yakin ingin mendelete nya?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Aksi Anda saat ini bisa dibatalkan kalau anda mau.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setOpenDialog(false)}>
+                Batal
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  handleDelete(selectedItem);
+                  setOpenDialog(false);
+                }}
+              >
+                Ya, Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </main>
   );

@@ -69,25 +69,25 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/admin/users">
+                  <Link href="/admin/users">
                     <Users className="h-4 w-4" />
                     <span>Users</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/admin/products">
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>Products</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/auctions">
+                  <Link href="/admin/items">
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>Items</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/lelangs">
                     <FileText className="h-4 w-4" />
-                    <span>Orders</span>
+                    <span>Auctions</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

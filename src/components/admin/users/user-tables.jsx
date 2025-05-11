@@ -15,6 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -28,26 +39,28 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserTables() {
+export default function UserTables({ onUserAdded, trigger }) {
   const [dataUser, setDataUser] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const { token, loading } = useAuth();
 
+ const handleDelete = async (id) => {
+  try {
+    const res = await axios.delete(`http://localhost:3001/users/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const handleDelete = async(id) => {
-    try {
-      const res =  await axios.delete(`http://localhost:3001/users/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if(res) {
-        alert("Data Sucessfully Deleted")
-      }
-    } catch(error) {
-      console.error(error.message)
+    if (res) {
+      setDataUser((prev) => prev.filter((user) => user.id_user !== id));
     }
+  } catch (error) {
+    console.error(error.message);
   }
+};
+
 
   async function init() {
     try {
@@ -71,7 +84,14 @@ export default function UserTables() {
     if (!loading) {
       init();
     }
-  }, [token, loading]);
+  }, [token, loading, trigger]);
+  
+  useEffect(() => {
+    if (onUserAdded) {
+      init();
+    }
+  }, [onUserAdded]);
+
   return (
     <>
       <main className="mt-12">
@@ -112,8 +132,15 @@ export default function UserTables() {
                           <DropdownMenuItem className="cursor-pointer">
                             Edit User
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="cursor-pointer" onClick={() => handleDelete(user.id_user)}>
-                            Delete User Detail
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setSelectedUser(user.id_user);
+                              setOpenDialog(true);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -123,6 +150,31 @@ export default function UserTables() {
               })}
             </TableBody>
           </Table>
+          <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Apakah Anda yakin ingin mendelete nya?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Aksi Anda saat ini bisa dibatalkan kalau anda mau.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setOpenDialog(false)}>
+                  Batal
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    handleDelete(selectedUser);
+                    setOpenDialog(false);
+                  }}
+                >
+                  Ya, Hapus
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </main>
     </>
