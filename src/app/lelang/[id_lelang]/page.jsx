@@ -9,74 +9,120 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AvatarImage } from "@radix-ui/react-avatar";
 const DetailLelangPage = () => {
   const { id_lelang } = useParams();
   const [detailData, setDetailData] = useState("");
   const [detailDataBarang, setDetailDataBarang] = useState("");
   const { token, loading } = useAuth();
   const [isPageLoading, setIsPageLoading] = useState(true);
-
+  const [timeLeft, setTimeLeft] = useState("");
   async function init() {
-    try {
-      const res = await axios.get(
-        `http://localhost:3001/auctions/${id_lelang}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res) {
-        console.error(res);
-        return;
+  try {
+    const res = await axios.get(
+      `http://localhost:3001/auctions/${id_lelang}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
 
-      if (!loading) {
-        const data = res.data.data;
-        setDetailData(res.data.data);
-        console.table(data);
-
-        getBarang(data.id_barang);
-      }
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setIsPageLoading(false);
+    if (!res) {
+      console.error(res);
+      return;
     }
+
+    if (!loading) {
+      const data = res.data.data;
+      setDetailData(data);
+      console.table(data);
+
+      if (data.id_barang) {
+        getBarang(data.id_barang); // Ensure id_barang exists before calling getBarang
+      } else {
+        console.error("id_barang is undefined or missing");
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    setIsPageLoading(false);
+  }
+}
+
+async function getBarang(id_barang) {
+  if (!id_barang) {
+    console.error("id_barang is invalid");
+    return;
   }
 
-  async function getBarang(id_barang) {
-    try {
-      const res = await axios.get(
-        `http://localhost:3001/v2/items/${id_barang}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!loading) {
-        console.table(res.data.data);
-        setDetailDataBarang(res.data.data);
+  try {
+    const res = await axios.get(
+      `http://localhost:3001/v2/items/${id_barang}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setIsPageLoading(false);
+    );
+
+    if (!loading) {
+      console.table(res.data.data);
+      setDetailDataBarang(res.data.data);
     }
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    setIsPageLoading(false);
   }
+}
+
 
   useEffect(() => {
     if (!loading && token) {
       init();
     }
   }, [token, loading]);
+
+  function getTimeRemaining(deadline) {
+    const total = new Date(deadline).getTime() - new Date().getTime();
+
+    if (total <= 0) return "Waktu habis";
+
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+
+    let result = "";
+
+    if (days > 0) result += `${days} hari `;
+    if (hours > 0) result += `${hours} jam `;
+    if (minutes > 0) result += `${minutes} menit`;
+    if (days === 0 && hours === 0 && minutes === 0) result = `${seconds} detik`;
+
+    return `Berakhir dalam ${result.trim()}`;
+  }
+
+  useEffect(() => {
+    const updateTimer = () => {
+      if (!detailData?.tenggat_waktu) {
+        setTimeLeft("");
+        return;
+      }
+
+      const remaining = getTimeRemaining(detailData.tenggat_waktu);
+      setTimeLeft(remaining);
+    };
+
+    updateTimer();
+
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [detailData]);
 
   if (isPageLoading || loading) {
     return (
@@ -85,7 +131,6 @@ const DetailLelangPage = () => {
       </main>
     );
   }
-
   return (
     <>
       <main className="p-4">
@@ -94,17 +139,19 @@ const DetailLelangPage = () => {
         </h1>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 items-start">
-          <div className="max-w-lg w-full bg-white rounded-lg shadow-lg">
+          <div className="max-w-lg w-full max-h-lvh h-full bg-white rounded-lg shadow-lg">
             <Image
-              className="w-full h-auto object-cover rounded-t-lg"
+              className="w-full h-full object-cover rounded-t-lg"
               src={
                 detailDataBarang.gambar
                   ? `${detailDataBarang.gambar}`
                   : "/path/to/fallback-image.jpg"
               }
-              alt="Violet Evergarden Auction"
+              alt={
+                detailDataBarang ? detailDataBarang.nama_barang : "Loading..."
+              }
               width={550}
-              height={300}
+              height={500}
             />
           </div>
 
@@ -125,25 +172,36 @@ const DetailLelangPage = () => {
                 <div className="flex justify-between">
                   <p className="md:text-lg text-sm">Tawaran Saat Ini</p>
                   <p className="md:text-2xl text-xl text-orange-400 font-semibold">
-                    {detailData.harga_akhir}
+                      Rp{" "}
+                      {detailData?.harga_akhir
+                        ? detailData.harga_akhir.toLocaleString("id-ID")
+                        : detailDataBarang?.harga_awal?.toLocaleString("id-ID")}
                   </p>
                 </div>
                 <div className="flex justify-between mt-3">
-                  <p className="md:text-lg text-sm font-light">15 Penawaran</p>
+                  <p className="md:text-lg text-base font-medium">Total Penawaran: {detailData.total_penawaran}</p>
                   <p className="md:text-lg text-sm font-light">
-                    Penawaran Pertama
                   </p>
                 </div>
               </section>
               <section className="mt-3">
                 <div className="flex justify-between">
                   <p>Time Left</p>
-                  <p className="font-semibold text-2xl">1h 23j 15m</p>
+                  <p className="font-semibold text-2xl">{timeLeft}</p>
                 </div>
                 <div className="flex justify-between">
                   <div></div>
                   <p className="md:text-lg text-sm font-light text-gray-500">
-                    Penawaran Berakhir pada tanggal 24 April
+                    {detailData?.tenggat_waktu
+                      ? `Penawaran berakhir pada ${new Date(
+                          detailData.tenggat_waktu
+                        ).toLocaleDateString("id-ID", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}`
+                      : "Tanggal penutupan tidak tersedia"}
                   </p>
                 </div>
 
