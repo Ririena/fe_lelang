@@ -21,7 +21,7 @@ const PageLelang = () => {
   const { token, loading } = useAuth();
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/v2/items", {
+      const res = await axios.get("http://localhost:3001/auctions", {
         headers: {
           "Content-Type": "application/json",
         },

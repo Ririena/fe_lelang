@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -15,8 +16,31 @@ import {
   ShoppingBasket,
   Users,
 } from "lucide-react";
-
+import axios from "axios";
+import { useEffect, useState } from "react";
 export function DashboardContent() {
+  const [countMasyrakat, setCountMasyarakat] = useState();
+  async function getCount() {
+    try {
+      const resUser = await axios.get(
+        "http://localhost:3001/v1/user/masyarakat",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setCountMasyarakat(resUser.data);
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  useEffect(() => {
+    getCount();
+  }, []);
+
   return (
     <SidebarInset>
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
@@ -34,7 +58,7 @@ export function DashboardContent() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+150 User Active</div>
+              <div className="text-2xl font-bold">+{countMasyrakat ? countMasyrakat.count : "Loading..."} User Active</div>
               <p className="text-xs text-muted-foreground">
                 <span className="text-emerald-500 flex items-center">
                   <ArrowUp className="mr-1 h-3 w-3" />
@@ -130,7 +154,7 @@ export function DashboardContent() {
                       </p>
                     </div>
                     <div className="text-sm font-medium">
-                      ${(Math.random() * 100).toFixed(2)}
+                      {/* ${(Math.random() * 100).toFixed(2)} */}
                     </div>
                   </div>
                 ))}
