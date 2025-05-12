@@ -23,17 +23,17 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <AuthProvider>
-        <RoleAccessProvider>
-          <body
-            className={`${notoSans.variable} ${notoSansJP} antialiased`}
-            suppressHydrationWarning={true}
-          >
+      <body
+        className={`${notoSans.variable} ${notoSansJP} antialiased`}
+        suppressHydrationWarning={true}
+      >
+        <AuthProvider>
+          <RoleAccessProvider>
             {children}
-          <Toaster/>
-          </body>
-        </RoleAccessProvider>
-      </AuthProvider>
+            <Toaster />
+          </RoleAccessProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
