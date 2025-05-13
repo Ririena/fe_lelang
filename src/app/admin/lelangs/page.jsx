@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import LelangTable from "@/components/admin/lelangs/lelang-tables";
 import LelangFormDialog from "@/components/admin/lelangs/lelang-form-dialog";
-const AdminPageLelang = () => {
+const AdminLelangPage = () => {
   return (
     <>
       <SidebarProvider>
@@ -30,4 +30,4 @@ const AdminPageLelang = () => {
   );
 };
 
-export default AdminPageLelang;
+export default AdminLelangPage;

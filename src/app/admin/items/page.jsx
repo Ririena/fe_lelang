@@ -28,15 +28,15 @@ const AdminPageItems = () => {
         <HeadersInsets />
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-xl font-semibold">Data Barang</h1>
+            <h1 className="text-xl font-semibold">Items Data</h1>
             <ItemFormDialog
               onItemAdded={() => setTrigger((prev) => prev + 1)}
             />
           </div>
           <div className="flex gap-4 mb-4">
-            <Input 
-              placeholder="Search Barang" 
-              className="w-md" 
+            <Input
+              placeholder="Search Barang"
+              className="w-md"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -53,9 +53,9 @@ const AdminPageItems = () => {
               </SelectContent>
             </Select>
           </div>
-          <ItemTables 
-            trigger={trigger} 
-            searchQuery={searchQuery} 
+          <ItemTables
+            trigger={trigger}
+            searchQuery={searchQuery}
             filterBy={filterBy}
           />
         </main>

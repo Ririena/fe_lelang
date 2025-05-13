@@ -46,7 +46,7 @@ const LoginPage = () => {
       });
 
       setTimeout(() => {
-        router.push("/");
+        router.push("/", {scroll: false});
       }, 2000);
     } catch (error) {
       console.error(error.response?.data?.message || "Login Failed");
@@ -54,7 +54,7 @@ const LoginPage = () => {
   };
 
   const isDontHaveAccount = () => {
-    router.push("/register");
+    router.replace("/register", {scroll: false});
     return;
   };
 
