@@ -57,14 +57,14 @@ const LelangFormDialog = () => {
     console.log("Barang yang sedang dilelang:", idBarangLelangAktif); // Debug
 
     // Filter items that are not associated with any active auction
-    const barangTersedia = semuaBarang.filter(
-      (barang) => !idBarangLelangAktif.includes(barang.id_barang)
-    );
+    // const barangTersedia = semuaBarang.filter(
+    //   (barang) => !idBarangLelangAktif.includes(barang.id_barang)
+    // );
 
-    console.log("Barang yang tersedia untuk lelang:", barangTersedia); // Debug
+    // console.log("Barang yang tersedia untuk lelang:", barangTersedia); // Debug
 
-    // Update the state with the filtered items
-    setDataBarang(barangTersedia);
+    // // Update the state with the filtered items
+    setDataBarang(semuaBarang);
   } catch (error) {
     console.error(error.message);
   } finally {

@@ -10,7 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { uploadImage } from "@/lib/uploadImage";
 
 export default function ItemFormDialog() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nama_barang: "",
@@ -18,6 +18,8 @@ export default function ItemFormDialog() {
     deskripsi: "",
     gambar: null,
   });
+
+  console.log(user)
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;

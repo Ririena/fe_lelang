@@ -231,7 +231,7 @@ const DetailLelangPage = () => {
               <section className="mt-3">
                 <div className="flex justify-between">
                   <p>Time Left</p>
-                  <p className="font-semibold text-2xl">{timeLeft}</p>
+                  <p className="font-semibold text-xl">{timeLeft}</p>
                 </div>
                 <div className="flex justify-between">
                   <div></div>
