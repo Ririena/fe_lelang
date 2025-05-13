@@ -1,53 +1,68 @@
-'use client'
+"use client";
 
-import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { useAuth } from '@/context/AuthContext'
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import Loading from "@/app/loading";
 
-const accessRule = [
+// Define access rules for different routes
+const accessRules = [
   {
-    paths: ['/dashboard', '/admin', '/petugas'],
-    allowRoles: ['admin', 'petugas'],
+    paths: ["/dashboard", "/admin", "/petugas"],
+    allowRoles: ["admin", "petugas"],
+    adminLoginPath: "/admin/login",
   },
   {
-    paths: ['/lelang', '/profile'],
-    allowRoles: ['masyarakat', 'admin', 'petugas'],
+    paths: ["/lelang", "/profile"],
+    allowRoles: ["masyarakat", "admin", "petugas"],
+    adminLoginPath: "/login",
   },
-]
+];
+
+const publicPaths = ["/login", "/admin/login", "/register", "/not-authorized"];
 
 export default function RoleAccessProvider({ children }) {
-  const { user, token, loading } = useAuth()
-  const pathname = usePathname()
-  const router = useRouter()
+  const { user, token, loading } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
-    if (loading || !pathname) return
+    if (loading) return;
 
-    // Cek apakah path yang diakses termasuk dalam daftar yang memerlukan autentikasi
-    const rule = accessRule.find(rule =>
-      rule.paths.some(path => pathname.startsWith(path))
-    )
+    // Check if current path is public
+    const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+    if (isPublicPath) return;
 
-    // Jika path memerlukan autentikasi, cek login status dan role
-    if (rule) {
-      // Pengguna belum login atau tidak memiliki akses role yang sesuai
-      if (!token || !user || !user.role || !rule.allowRoles.includes(user.role)) {
-        // Jika pengguna belum login, arahkan ke login yang sesuai (login admin atau login biasa)
-        if (!token) {
-          if (pathname.startsWith('/admin') || pathname.startsWith('/petugas')) {
-            router.replace('/admin/login') // Login untuk admin
-          } else {
-            router.replace('/login') // Login untuk pengguna biasa
-          }
-        } else {
-          router.replace('/not-authorized') // Jika sudah login tapi role tidak sesuai
-        }
+    // Find applicable access rule for current path
+    const applicableRule = accessRules.find((rule) =>
+      rule.paths.some((path) => pathname.startsWith(path)),
+    );
+
+    if (applicableRule) {
+      // Path requires authentication
+      if (!token || !user?.role) {
+        // Not authenticated - redirect to appropriate login
+        const loginPath =
+          pathname.startsWith("/admin") || pathname.startsWith("/petugas")
+            ? "/admin/login"
+            : "/login";
+        router.replace(loginPath);
+      } else if (!applicableRule.allowRoles.includes(user.role)) {
+        // Authenticated but not authorized - redirect to not-authorized
+        router.replace("/not-authorized");
       }
-    } else if (!token && !pathname.startsWith('/register')) {
-      // Jika path yang diakses tidak memerlukan autentikasi dan pengguna belum login
-      router.replace('/login') // Hanya arahkan ke login jika bukan halaman register
+    } else if (!token) {
+      // Path doesn't have specific rules but requires authentication
+      router.replace("/login");
     }
-  }, [pathname, user, token, router, loading])
+  }, [loading, user, token, pathname, router]);
 
-  return children
+  if (
+    loading ||
+    (!token && !publicPaths.some((path) => pathname.startsWith(path)))
+  ) {
+    return <Loading />;
+  }
+
+  return children;
 }
