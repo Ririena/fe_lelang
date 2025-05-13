@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+
 const formatRupiah = (value) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -32,9 +33,69 @@ const formatTanggal = (date) => {
   return newDate.toLocaleDateString("id-ID", options);
 };
 
-const LelangTable = () => {
+const LelangTable = ({ searchQuery, filterBy }) => {
   const { token } = useAuth();
   const [dataLelang, setDataLelang] = useState([]);
+
+  // Filter and sort lelangs based on search query and filter selection
+  const filteredLelangs = useMemo(() => {
+    let filtered = [...dataLelang];
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((lelang) => {
+        const idLelang = lelang?.id_lelang?.toString() || "";
+        const idBarang = lelang?.id_barang?.toString() || "";
+        const idPemenang = lelang?.id_pemenang?.toString() || "";
+        const hargaAkhir = lelang?.harga_akhir?.toString() || "";
+
+        return (
+          idLelang.includes(query) ||
+          idBarang.includes(query) ||
+          idPemenang.includes(query) ||
+          hargaAkhir.includes(query)
+        );
+      });
+    }
+
+    // Apply filters and sorting
+    switch (filterBy) {
+      case "active":
+        filtered = filtered.filter((lelang) => {
+          const tenggatWaktu = new Date(lelang?.tenggat_waktu);
+          return tenggatWaktu > new Date();
+        });
+        break;
+      case "ended":
+        filtered = filtered.filter((lelang) => {
+          const tenggatWaktu = new Date(lelang?.tenggat_waktu);
+          return tenggatWaktu <= new Date();
+        });
+        break;
+      case "price_asc":
+        filtered.sort((a, b) => (a?.harga_akhir || 0) - (b?.harga_akhir || 0));
+        break;
+      case "price_desc":
+        filtered.sort((a, b) => (b?.harga_akhir || 0) - (a?.harga_akhir || 0));
+        break;
+      case "date_asc":
+        filtered.sort(
+          (a, b) => new Date(a?.tenggat_waktu) - new Date(b?.tenggat_waktu)
+        );
+        break;
+      case "date_desc":
+        filtered.sort(
+          (a, b) => new Date(b?.tenggat_waktu) - new Date(a?.tenggat_waktu)
+        );
+        break;
+      default:
+        // No filtering for 'all'
+        break;
+    }
+
+    return filtered;
+  }, [dataLelang, searchQuery, filterBy]);
 
   async function init() {
     try {
@@ -59,6 +120,10 @@ const LelangTable = () => {
     init();
   }, [token]);
 
+  if (!dataLelang.length) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <main className="mt-12">
@@ -75,7 +140,7 @@ const LelangTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {dataLelang.map((data) => (
+              {filteredLelangs.map((data) => (
                 <TableRow key={data.id_lelang}>
                   <TableCell>{data.id_lelang}</TableCell>
                   <TableCell>{data.id_barang}</TableCell>

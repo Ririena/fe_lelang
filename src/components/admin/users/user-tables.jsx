@@ -35,32 +35,89 @@ import {
 } from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserTables({ onUserAdded, trigger }) {
+export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy }) {
   const [dataUser, setDataUser] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const { token, loading } = useAuth();
 
- const handleDelete = async (id) => {
-  try {
-    const res = await axios.delete(`http://localhost:3001/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  // Filter and sort users based on search query and filter selection
+  const filteredUsers = useMemo(() => {
+    let filtered = [...dataUser];
 
-    if (res) {
-      setDataUser((prev) => prev.filter((user) => user.id_user !== id));
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((user) => {
+        // Add null checks for each property
+        const username = user?.username?.toLowerCase() || '';
+        const id = user?.id_user?.toString() || '';
+        const role = user?.role?.toLowerCase() || '';
+        
+        return username.includes(query) ||
+               id.includes(query) ||
+               role.includes(query);
+      });
     }
-  } catch (error) {
-    console.error(error.message);
-  }
-};
 
+    // Apply role filter and sorting
+    switch (filterBy) {
+      case 'admin':
+        filtered = filtered.filter(user => 
+          user?.role?.toLowerCase() === 'admin'
+        );
+        break;
+      case 'masyarakat':
+        filtered = filtered.filter(user => 
+          user?.role?.toLowerCase() === 'masyarakat'
+        );
+        break;
+      case 'petugas':
+        filtered = filtered.filter(user => 
+          user?.role?.toLowerCase() === 'petugas'
+        );
+        break;
+      case 'name_asc':
+        filtered.sort((a, b) => {
+          const nameA = a?.username?.toLowerCase() || '';
+          const nameB = b?.username?.toLowerCase() || '';
+          return nameA.localeCompare(nameB);
+        });
+        break;
+      case 'name_desc':
+        filtered.sort((a, b) => {
+          const nameA = a?.username?.toLowerCase() || '';
+          const nameB = b?.username?.toLowerCase() || '';
+          return nameB.localeCompare(nameA);
+        });
+        break;
+      default:
+        // No filtering for 'all'
+        break;
+    }
+
+    return filtered;
+  }, [dataUser, searchQuery, filterBy]);
+
+  const handleDelete = async (id) => {
+    try {
+      const res = await axios.delete(`http://localhost:3001/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res) {
+        setDataUser((prev) => prev.filter((user) => user.id_user !== id));
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   async function init() {
     try {
@@ -92,6 +149,10 @@ export default function UserTables({ onUserAdded, trigger }) {
     }
   }, [onUserAdded]);
 
+  if (!dataUser.length) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <main className="mt-12">
@@ -107,12 +168,12 @@ export default function UserTables({ onUserAdded, trigger }) {
             </TableHeader>
 
             <TableBody>
-              {dataUser.map((user) => {
+              {filteredUsers.map((user) => {
                 return (
                   <TableRow key={user.id_user}>
                     <TableCell>{user.id_user}</TableCell>
                     <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.role}</TableCell>
+                    <TableCell className="capitalize">{user.role}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <span className="sr-only">Open menu</span>
