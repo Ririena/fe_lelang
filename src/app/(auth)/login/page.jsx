@@ -12,13 +12,14 @@ import { toast } from "sonner";
 
 const LoginPage = () => {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false)
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true)
 
     try {
       const res = await axios.post(
@@ -46,15 +47,17 @@ const LoginPage = () => {
       });
 
       setTimeout(() => {
-        router.push("/", {scroll: false});
+        router.push("/", { scroll: false });
       }, 2000);
     } catch (error) {
       console.error(error.response?.data?.message || "Login Failed");
+    } finally {
+setLoading(false)
     }
   };
 
   const isDontHaveAccount = () => {
-    router.replace("/register", {scroll: false});
+    router.replace("/register", { scroll: false });
     return;
   };
 
@@ -109,8 +112,12 @@ const LoginPage = () => {
                   icon={<Eye size={18} />}
                 />
 
-                <Button variant="orange" className="mt-6 w-full">
-                  Sign In
+                <Button
+                  variant="orange"
+                  className="mt-6 w-full"
+                  disabled={loading}
+                >
+                  {loading ? "Proccess" : "Sign In"}
                 </Button>
               </form>
             </CardContent>

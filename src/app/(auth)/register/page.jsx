@@ -11,7 +11,8 @@ import { toast } from "sonner";
 
 const RegisterPage = () => {
   const router = useRouter();
-  
+  const [loading, setLoading] = useState(false);
+
   const [registerForm, setRegisterForm] = useState({
     username: "",
     password: "",
@@ -27,6 +28,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const res = await axios.post(
       "https://belelang.vercel.app/register",
@@ -44,9 +46,10 @@ const RegisterPage = () => {
       router.push("/login");
     }
 
+    setLoading(false);
     toast("Register Berhasil, Silahkan Login", {
-      position: "top-center"
-    })
+      position: "top-center",
+    });
   };
 
   const isHaveAccount = () => {
@@ -94,6 +97,7 @@ const RegisterPage = () => {
                 <Input
                   placeholder="Enter Your Password"
                   name="password"
+                  type="password"
                   onChange={handlechange}
                   icon={<Eye size={18} />}
                 />
@@ -101,14 +105,20 @@ const RegisterPage = () => {
                   Confirm Password
                 </Label>
                 <Input
-                name="password_confirmation"
-                onChange={handlechange}
+                  name="password_confirmation"
+                  type="password"
+                  onChange={handlechange}
                   placeholder="Enter Your Password Again"
                   icon={<Eye size={18} />}
                 />
 
-                <Button type="submit" variant="orange" className="mt-6 w-full">
-                  Register
+                <Button
+                  type="submit"
+                  variant="orange"
+                  className="mt-6 w-full"
+                  disabled={loading}
+                >
+                  {loading ? "Process..." : "Register"}
                 </Button>
               </form>
             </CardContent>
