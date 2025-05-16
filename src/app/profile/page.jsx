@@ -7,16 +7,14 @@ import { useAuth } from "@/context/AuthContext";
 import ProfileOffers from "@/components/profile/profile-offers";
 import { ProfileMenu } from "@/components/profile/profile-menu";
 import ProfileEdit from "@/components/profile/profile-edit";
+import ProfileBids from "@/components/profile/profile-bids";
 const ProfilePage = () => {
   const [data, setData] = useState("");
   const [offers, setOffers] = useState([]);
+  const [myBids, setMyBids] = useState([]);
 
-  const { token, loading, user } = useAuth();
-  useEffect(() => {
-    if (!loading && token) {
-      fetchOffers();
-    }
-  }, [loading, token]);
+  const { token, loading } = useAuth();
+
   const fetchDataUser = async () => {
     try {
       const res = await axios.get("http://localhost:3001/profile", {
@@ -50,9 +48,29 @@ const ProfilePage = () => {
     }
   };
 
+  const fetchBids = async () => {
+    try {
+      const res = await axios.get("http://localhost:3001/v1/my-bids", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!loading && res.data?.data) {
+        setMyBids(res.data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch bids:", error);
+    }
+  };
+
   useEffect(() => {
     if (!loading && token) {
       fetchDataUser();
+
+      fetchOffers();
+      fetchBids();
     }
   }, [loading, token]);
 
@@ -68,16 +86,23 @@ const ProfilePage = () => {
           <div className="md:col-span-9">
             <Tabs defaultValue="profile">
               <div className="flex items-center justify-between mb-4">
-                <TabsList className="grid w-full max-w-md grid-cols-2">
+                <TabsList className="grid w-full  gap-4 grid-cols-3 ">
                   <TabsTrigger value="profile">Informasi Pribadi</TabsTrigger>
-                  <TabsTrigger value="offers">Penawaran Saya</TabsTrigger>
+                  <TabsTrigger value="bids">Penawaran Saya</TabsTrigger>
+                  <TabsTrigger value="offers">
+                    Lelang Dimenangkan Saya
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
               <TabsContent value="profile" className="mt-0">
-                <Card>
+     
                   <ProfileEdit />
-                </Card>
+           
+              </TabsContent>
+
+              <TabsContent value="bids" className="mt-0">
+                <ProfileBids myBids={myBids} />
               </TabsContent>
 
               <TabsContent value="offers" className="mt-0">

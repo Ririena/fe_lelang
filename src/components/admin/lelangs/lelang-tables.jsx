@@ -19,6 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import LelangEditDialog from "./lelang-edit-dialog";
+import LelangDeleteDialog from "./lelang-delete.dialog";
 
 const formatRupiah = (value) => {
   return new Intl.NumberFormat("id-ID", {
@@ -36,12 +38,14 @@ const formatTanggal = (date) => {
 const LelangTable = ({ searchQuery, filterBy }) => {
   const { token } = useAuth();
   const [dataLelang, setDataLelang] = useState([]);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedDeleteId, setSelectedDeleteId] = useState(null);
+  const [selectedLelang, setSelectedLelang] = useState(null);
 
-  // Filter and sort lelangs based on search query and filter selection
   const filteredLelangs = useMemo(() => {
     let filtered = [...dataLelang];
 
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((lelang) => {
@@ -59,7 +63,6 @@ const LelangTable = ({ searchQuery, filterBy }) => {
       });
     }
 
-    // Apply filters and sorting
     switch (filterBy) {
       case "active":
         filtered = filtered.filter((lelang) => {
@@ -90,14 +93,13 @@ const LelangTable = ({ searchQuery, filterBy }) => {
         );
         break;
       default:
-        // No filtering for 'all'
         break;
     }
 
     return filtered;
   }, [dataLelang, searchQuery, filterBy]);
 
-  async function init() {
+  const init = async () => {
     try {
       const res = await axios.get("http://localhost:3001/auctions-full", {
         headers: {
@@ -107,14 +109,38 @@ const LelangTable = ({ searchQuery, filterBy }) => {
 
       if (res.data && res.data.data) {
         setDataLelang(res.data.data);
-        console.log(res.data.data);
       } else {
         console.error("No data found in the response");
       }
     } catch (error) {
       console.error(error.message);
     }
-  }
+  };
+
+  const handleEdit = (lelang) => {
+    setSelectedLelang(lelang);
+    setEditDialogOpen(true);
+  };
+
+  // callback dari LelangEditDialog saat update sukses
+  const handleUpdated = (updatedData) => {
+    setDataLelang((prev) =>
+      prev.map((item) =>
+        item.id_lelang === updatedData.id_lelang ? updatedData : item
+      )
+    );
+  };
+
+  const handleDeleteClick = (idLelang) => {
+    setSelectedDeleteId(idLelang);
+    setDeleteDialogOpen(true);
+  };
+
+  const onDeleteSuccess = () => {
+    init();
+    setDeleteDialogOpen(false);
+    setSelectedDeleteId(null);
+  };
 
   useEffect(() => {
     init();
@@ -162,12 +188,15 @@ const LelangTable = ({ searchQuery, filterBy }) => {
                         <DropdownMenuItem className="cursor-pointer">
                           Lihat Detail Barang
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleEdit(data)}
+                        >
                           Edit Barang
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="cursor-pointer text-red-600"
-                          onClick={() => handleConfirmDelete(data.id_barang)}
+                          onClick={() => handleDeleteClick(data.id_lelang)}
                         >
                           Delete Barang
                         </DropdownMenuItem>
@@ -180,6 +209,24 @@ const LelangTable = ({ searchQuery, filterBy }) => {
           </Table>
         </div>
       </main>
+
+      {selectedLelang && (
+        <LelangEditDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          lelang={selectedLelang}
+          onUpdated={handleUpdated} 
+        />
+      )}
+
+      {selectedDeleteId && (
+        <LelangDeleteDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          idLelang={selectedDeleteId}
+          onDeleteSuccess={onDeleteSuccess}
+        />
+      )}
     </>
   );
 };

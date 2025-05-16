@@ -54,17 +54,47 @@
 //   );
 // };
 
-
+"use client";
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { DashboardContent } from "@/components/admin/dashboard-content";
 import { SidebarProvider } from "@/components/ui/sidebar";
-
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthFetch } from "@/lib/fetch";
+import axios from "axios";
 export default function DashboardPage() {
+  const { loading, token } = useAuth();
+  const [listHistory, setListHistory] = useState([]);
+
+  async function fetchHistory() {
+    try {
+      const res = await axios.get("http://localhost:3001/v7/history-desc", {
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!loading && res.data) {
+        setListHistory(res.data.data);
+        console.table(res.data.data);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
+  useEffect(() => {
+    if (!loading && token) {
+      fetchHistory();
+    }
+  }, [token, loading]);
+
   return (
     <>
       <SidebarProvider>
         <AdminSidebar />
-        <DashboardContent />
+        <DashboardContent listHistory={listHistory} />
       </SidebarProvider>
     </>
   );

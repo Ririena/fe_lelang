@@ -46,50 +46,61 @@ const ProfileEdit = () => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <CardHeader>
-          <CardTitle>Pengaturan Akun</CardTitle>
-          <CardDescription>Atur preferensi akun anda</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <label
-                htmlFor="fullName"
-                className="text-sm font-medium text-gray-700"
-              >
-                Nama Lengkap
-              </label>
-              <Input
-                id="fullName"
-                name="username"
-                placeholder={user ? user.username : "Loading..."}
-                type="text"
-                value={updateForm.username}
-                onChange={handleChange}
-              />
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+            <CardDescription>
+              Update your credentials such username and password
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-3 md:grid-cols-1">
+              <div className="space-y-2">
+                <label
+                  htmlFor="fullName"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Nama Lengkap
+                </label>
+                <Input
+                  id="fullName"
+                  name="username"
+                  placeholder={user ? user.username : "Loading..."}
+                  type="text"
+                  value={updateForm.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  name="password"
+                  value={updateForm.password}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                name="password"
-                value={updateForm.password}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between border-t mt-4 bg-gray-50/50 px-6 py-4">
-          <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
-            Simpan Perubahan
-          </Button>
-        </CardFooter>
+            <Button type="submit" className="bg-orange-500 hover:bg-orange-600">
+              Save
+            </Button>
+          </CardContent>
+          <CardFooter className="grid grid-cols-1 gap-2 border-t mt-4 bg-gray-50/50 px-6 py-4">
+            <CardTitle>Delete Account</CardTitle>
+            <CardDescription>
+              Delete Your Account And Its Resources
+            </CardDescription>
+            <Button variant="destructive" className="max-w-[150px] w-full">
+              Delete Account
+            </Button>
+          </CardFooter>
+        </Card>
       </form>
     </>
   );

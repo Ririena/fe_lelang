@@ -18,7 +18,26 @@ import { useAuth } from "@/context/AuthContext";
 const PageLelang = () => {
   const [lelangData, setLelangData] = useState([]);
   const [profile, setProfile] = useState("");
+  const [featuredData, setFeaturedData] = useState([]);
   const { token, loading } = useAuth();
+
+  async function fetchFeatured() {
+    try {
+      const res = await axios.get("http://localhost:3001/auctions/featured", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!loading) {
+        console.table(res.data.data);
+        setFeaturedData(res.data.data);
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
   async function init() {
     try {
       const res = await axios.get("http://localhost:3001/auctions", {
@@ -39,6 +58,7 @@ const PageLelang = () => {
   React.useEffect(() => {
     if (!loading) {
       init();
+      fetchFeatured();
     }
   }, [loading]);
 
@@ -62,16 +82,16 @@ const PageLelang = () => {
         <section>
           <h2 className="text-xl font-bold mb-4">Lelang Unggulan</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {products.slice(0, 4).map((product, index) => (
+            {featuredData.map((product) => (
               <div
-                key={`featured-${index}`}
+                key={`featured-${product.id_lelang}`}
                 className="border rounded-md overflow-hidden bg-white"
               >
-                <Link href={`/product/${index}`}>
+                <Link href={`/lelang/${product.id_lelang}`}>
                   <div className="bg-gray-100 sm:h-48 md:h-60 overflow-hidden">
                     <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.title}
+                      src={product.gambar || "/placeholder.svg"}
+                      alt="test"
                       width={500}
                       height={500}
                       className=" object-cover h-[300px]"
@@ -79,11 +99,15 @@ const PageLelang = () => {
                   </div>
                 </Link>
                 <div className="p-3">
-                  <Link href={`/product/${index}`}>
-                    <h3 className="font-medium">{product.title}</h3>
+                  <Link href={`/lelang/${product.id_barang}`}>
+                    <h3 className="font-medium">{product.nama_barang}</h3>
                   </Link>
-                  <p className="text-xs text-gray-500">Tawaran saat ini</p>
-                  <p className="text-orange-500 font-bold">{product.price}</p>
+                  <p className="text-xs text-gray-500">
+                    {product.jumlah_penawaran} Penawaran
+                  </p>
+                  <p className="text-orange-500 font-bold">
+                    Rp. {product.harga_akhir.toLocaleString("id-ID")}
+                  </p>
                   <div className="flex justify-between items-center mt-2">
                     <span className="text-xs text-gray-500">
                       {product.bids}
@@ -160,11 +184,11 @@ const PageLelang = () => {
                     </Link>
                     <p className="text-xs text-gray-500">Tawaran saat ini</p>
                     <p className="text-orange-500 font-bold">
-                      {lelang.harga_awal}
+                      Rp.{lelang.harga_akhir.toLocaleString("id-ID")}
                     </p>
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-xs text-gray-500">
-                        {lelang.harga_awal}
+                        {lelang.jumlah_penawaran} Penawaran
                       </span>
                       <Button
                         size="sm"
@@ -185,32 +209,3 @@ const PageLelang = () => {
 };
 
 export default PageLelang;
-
-const FeaturedLelang = (props) => {
-  return (
-    <>
-      <div className="w-sm bg-white rounded-lg shadow-lg py-0">
-        <Image
-          className="w-md h-auto object-cover rounded-t-lg"
-          src="/auction-landing.jpg"
-          alt="Violet Evergarden Auction"
-          width={300}
-          height={280}
-        />
-        <div className="px-4 py-3">
-          <h2 className="text-xl font-semibold">{props.judul}</h2>
-          <p className="text-md font-light">Tawaran Saat Ini</p>
-          <p className="text-lg text-orange-500 font-medium">
-            Rp.{props.harga}
-          </p>
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-md font-light">Penawaran {props.penawaran}</p>
-            <Button className="w-32" variant="orange">
-              Tawar
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
