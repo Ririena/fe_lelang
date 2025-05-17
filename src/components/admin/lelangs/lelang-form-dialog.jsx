@@ -17,64 +17,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-const LelangFormDialog = () => {
+const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   const [dataBarang, setDataBarang] = useState([]);
   const [selectedBarang, setSelectedBarang] = useState("");
   const [tglLelang, setTglLelang] = useState("");
   const [tenggatWaktu, setTenggatWaktu] = useState("");
+  const router = useRouter()
   const [loadingData, setLoadingData] = useState(true);
   const { user, token, loading } = useAuth();
   console.log(user);
- async function getBarang() {
-  try {
-    // Fetch all items
-    const resBarang = await axios.get("http://localhost:3001/v2/items", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  async function getBarang() {
+    try {
 
-    // Fetch all active auctions
-    const resLelang = await axios.get("http://localhost:3001/auctions", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+      const resBarang = await axios.get("http://localhost:3001/v2/items", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const semuaBarang = resBarang.data.data;
-    const semuaLelang = resLelang.data.data;
+      const resLelang = await axios.get("http://localhost:3001/auctions", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    console.log("Semua Barang:", semuaBarang); // Debug
-    console.log("Semua Lelang Aktif:", semuaLelang); // Debug
+      const semuaBarang = resBarang.data.data;
+      const semuaLelang = resLelang.data.data;
 
-    // Get all `id_barang` from active auctions
-    const idBarangLelangAktif = semuaLelang.map((lelang) => lelang.id_barang);
+      console.log("Semua Barang:", semuaBarang);
+      console.log("Semua Lelang Aktif:", semuaLelang); 
 
-    console.log("Barang yang sedang dilelang:", idBarangLelangAktif); // Debug
+   
+      const idBarangLelangAktif = semuaLelang.map((lelang) => lelang.id_barang);
 
-    // Filter items that are not associated with any active auction
-    // const barangTersedia = semuaBarang.filter(
-    //   (barang) => !idBarangLelangAktif.includes(barang.id_barang)
-    // );
-
-    // console.log("Barang yang tersedia untuk lelang:", barangTersedia); // Debug
-
-    // // Update the state with the filtered items
-    setDataBarang(semuaBarang);
-  } catch (error) {
-    console.error(error.message);
-  } finally {
-    setLoadingData(false);
+      console.log("Barang yang sedang dilelang:", idBarangLelangAktif); // Debug
+      setDataBarang(semuaBarang);
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setLoadingData(false);
+    }
   }
-}
 
   useEffect(() => {
     if (!loading) getBarang();
-  }, [loading]);
+  }, [loading, onLelangAdded, refreshTrigger]);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,6 +86,11 @@ const LelangFormDialog = () => {
       });
 
       alert("Lelang Berhasil");
+   
+
+      if (onLelangAdded) {
+        onLelangAdded();
+      }
     } catch (error) {
       console.error(error.message);
     }

@@ -8,8 +8,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { uploadImage } from "@/lib/uploadImage";
-
-export default function ItemFormDialog() {
+import { useRouter } from "next/navigation";
+export default function ItemFormDialog({onItemAdded}) {
   const { token, user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,6 +18,8 @@ export default function ItemFormDialog() {
     deskripsi: "",
     gambar: null,
   });
+
+  const router = useRouter()
 
   console.log(user)
 
@@ -60,6 +62,8 @@ export default function ItemFormDialog() {
         deskripsi: "",
         gambar: null,
       });
+
+      router.refresh()
     } catch (error) {
       console.error(error);
       alert("Error: " + error.message);

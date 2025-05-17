@@ -35,7 +35,7 @@ const formatTanggal = (date) => {
   return newDate.toLocaleDateString("id-ID", options);
 };
 
-const LelangTable = ({ searchQuery, filterBy }) => {
+const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
   const { token } = useAuth();
   const [dataLelang, setDataLelang] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -117,17 +117,22 @@ const LelangTable = ({ searchQuery, filterBy }) => {
     }
   };
 
-  const handleEdit = (lelang) => {
+  const handleEdit = (lelang, items) => {
     setSelectedLelang(lelang);
     setEditDialogOpen(true);
   };
 
-  // callback dari LelangEditDialog saat update sukses
-  const handleUpdated = (updatedData) => {
+  const handleUpdateLelang = (updatedLelang) => {
     setDataLelang((prev) =>
       prev.map((item) =>
-        item.id_lelang === updatedData.id_lelang ? updatedData : item
+        item.id_lelang === updatedLelang.id_lelang ? updatedLelang : item
       )
+    );
+  };
+
+  const handleDeleteSuccess = () => {
+    setDataLelang((prev) =>
+      prev.filter((item) => item.id_lelang !== selectedDeleteId)
     );
   };
 
@@ -144,7 +149,7 @@ const LelangTable = ({ searchQuery, filterBy }) => {
 
   useEffect(() => {
     init();
-  }, [token]);
+  }, [token, refreshTrigger]);
 
   if (!dataLelang.length) {
     return <div>Loading...</div>;
@@ -162,6 +167,7 @@ const LelangTable = ({ searchQuery, filterBy }) => {
                 <TableHead>ID Pemenang</TableHead>
                 <TableHead>Harga Akhir</TableHead>
                 <TableHead>Berakhir Dalam</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Aksi</TableHead>
               </TableRow>
             </TableHeader>
@@ -175,6 +181,7 @@ const LelangTable = ({ searchQuery, filterBy }) => {
                   </TableCell>
                   <TableCell>{formatRupiah(data.harga_akhir)}</TableCell>
                   <TableCell>{formatTanggal(data.tenggat_waktu)}</TableCell>
+                  <TableCell>{data.status}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -215,7 +222,7 @@ const LelangTable = ({ searchQuery, filterBy }) => {
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}
           lelang={selectedLelang}
-          onUpdated={handleUpdated} 
+          onUpdated={handleUpdateLelang}
         />
       )}
 
@@ -224,7 +231,7 @@ const LelangTable = ({ searchQuery, filterBy }) => {
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
           idLelang={selectedDeleteId}
-          onDeleteSuccess={onDeleteSuccess}
+          onDeleteSuccess={handleDeleteSuccess}
         />
       )}
     </>

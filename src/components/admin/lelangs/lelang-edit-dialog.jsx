@@ -1,42 +1,98 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
+import { Input } from "@/components/ui/input";
 
 const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
-  const [hargaAkhir, setHargaAkhir] = useState("");
+  const [status, setStatus] = useState("");
+  const [tenggat_waktu, setTenggatWaktu] = useState("");
   const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (lelang) {
-      setHargaAkhir(lelang.harga_akhir);
+      setStatus(lelang.status || "");
+
+      if (lelang.tenggat_waktu) {
+        const utcDate = new Date(lelang.tenggat_waktu);
+        const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
+        const formatted = localDate.toISOString().slice(0, 16); // "yyyy-MM-ddTHH:mm"
+        setTenggatWaktu(formatted);
+      } else {
+        setTenggatWaktu("");
+      }
     }
   }, [lelang]);
 
-  const handleSubmit = async () => {
-    const newHarga = parseInt(hargaAkhir);
-    if (isNaN(newHarga) || newHarga < 0) {
-      alert("Harga Akhir harus berupa angka positif");
-      return;
-    }
+  // Format tenggat_waktu asli untuk perbandingan perubahan
+  const formattedOriginalTenggatWaktu = lelang?.tenggat_waktu
+    ? new Date(new Date(lelang.tenggat_waktu).getTime() - new Date(lelang.tenggat_waktu).getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16)
+    : "";
 
+  // Cek apakah tidak ada perubahan (status & tenggat_waktu)
+  const isUnchanged =
+    status === lelang?.status &&
+    tenggat_waktu === formattedOriginalTenggatWaktu;
+
+  // Validasi input
+  const isInvalid = !status || (status === "dibuka" && !tenggat_waktu);
+
+  // Validasi conflict: tidak boleh ubah tenggat_waktu saat status = "tutup"
+  const isConflict = status === "tutup" && tenggat_waktu !== formattedOriginalTenggatWaktu;
+
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-      const updatedData = {
-        ...lelang,
-        harga_akhir: newHarga,
-      };
+      const updatedData = {};
 
-      await axios.put(`http://localhost:3001/auctions/${lelang.id_lelang}`, updatedData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      if (status !== lelang?.status) {
+        updatedData.status = status;
+      }
+
+      // Kirim tenggat_waktu hanya jika status "dibuka" dan ada perubahan tenggat_waktu
+      if (
+        status === "dibuka" &&
+        tenggat_waktu &&
+        tenggat_waktu !== formattedOriginalTenggatWaktu
+      ) {
+        const localDate = new Date(tenggat_waktu);
+        const utcDate = new Date(localDate.getTime() + localDate.getTimezoneOffset() * 60000);
+        updatedData.tenggat_waktu = utcDate.toISOString();
+      }
+
+      await axios.put(
+        `http://localhost:3001/auctions/${lelang.id_lelang}`,
+        updatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setLoading(false);
-      onOpenChange(false); 
+      onOpenChange(false);
 
       if (onUpdated) {
-        onUpdated(updatedData); 
+        onUpdated({ ...lelang, ...updatedData });
       }
     } catch (error) {
       setLoading(false);
@@ -44,28 +100,56 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
     }
   };
 
-  const isUnchanged = lelang?.harga_akhir === parseInt(hargaAkhir);
-  const isInvalid = hargaAkhir === "" || isNaN(parseInt(hargaAkhir)) || parseInt(hargaAkhir) < 0;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Harga Akhir</DialogTitle>
+          <DialogTitle>Edit Lelang</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <Input
-            type="number"
-            value={hargaAkhir}
-            onChange={(e) => setHargaAkhir(e.target.value)}
-            min={0}
-            disabled={loading}
-          />
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-1">
+              Tenggat Waktu
+            </Label>
+            <Input
+              type="datetime-local"
+              name="tenggat_waktu"
+              value={tenggat_waktu}
+              onChange={(e) => setTenggatWaktu(e.target.value)}
+              disabled={status === "tutup"} // disable input jika status tutup
+            />
+
+            <Label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+              Status
+            </Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dibuka">Dibuka</SelectItem>
+                <SelectItem value="tutup">Tutup</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
               Batal
             </Button>
-            <Button onClick={handleSubmit} disabled={isUnchanged || isInvalid || loading}>
+            <Button
+              onClick={handleSubmit}
+              disabled={isUnchanged || isInvalid || isConflict || loading}
+              title={
+                isConflict
+                  ? "Tidak boleh mengubah tenggat waktu saat status ditutup"
+                  : undefined
+              }
+            >
               {loading ? "Menyimpan..." : "Simpan"}
             </Button>
           </div>
