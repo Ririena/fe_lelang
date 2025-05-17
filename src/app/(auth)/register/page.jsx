@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ToastCard } from "@/components/ui/toast-card";
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -30,26 +31,48 @@ const RegisterPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    const res = await axios.post(
-      "https://belelang.vercel.app/register",
-      registerForm,
-      {
+    if (registerForm.password.length < 8) {
+      toast.custom(() => (
+        <ToastCard
+          title="Register Gagal"
+          variant="destructive"
+          description="Password need at least 8 characters"
+        />
+      ));
+      return;
+    }
+    try {
+      await axios.post("https://belelang.vercel.app/register", registerForm, {
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      });
 
-    if (res.error) {
-      console.error(res.error);
-    } else {
+      toast.custom(() => (
+        <ToastCard
+          title="Register Berhasil"
+          variant="success"
+          description="Register Berhasil, Akan Dialihkan Ke Login"
+        />
+      ));
+
       router.push("/login");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "Terjadi kesalahan saat register";
+
+      toast.custom(() => {
+        return (
+          <ToastCard
+            title="Register Gagal"
+            variant="destructive"
+            description={errorMessage}
+          />
+        );
+      });
     }
 
     setLoading(false);
-    toast("Register Berhasil, Silahkan Login", {
-      position: "top-center",
-    });
   };
 
   const isHaveAccount = () => {

@@ -81,20 +81,20 @@ const PageLelang = () => {
       <main className="mt-12">
         <section>
           <h2 className="text-xl font-bold mb-4">Lelang Unggulan</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {featuredData.map((product) => (
               <div
                 key={`featured-${product.id_lelang}`}
                 className="border rounded-md overflow-hidden bg-white"
               >
                 <Link href={`/lelang/${product.id_lelang}`}>
-                  <div className="bg-gray-100 sm:h-48 md:h-60 overflow-hidden">
+                  <div className="bg-gray-100 sm:h-[200px] md:h-[300px] overflow-hidden">
                     <Image
                       src={product.gambar || "/placeholder.svg"}
                       alt="test"
                       width={500}
                       height={500}
-                      className=" object-cover h-[300px]"
+                      className=" h-[300px] transition-transform hover:scale-105"
                     />
                   </div>
                 </Link>

@@ -12,6 +12,8 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ToastCard } from "@/components/ui/toast-card";
+import { toast } from "sonner";
 
 const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
     }
   };
 
-  const handleSubmit = async () => {
+ const handleSubmit = async () => {
   setLoading(true);
 
   try {
@@ -53,7 +55,7 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
       nama_barang,
       harga_awal: Number(harga_awal),
       deskripsi,
-      gambar, 
+      gambar,
     };
 
     await axios.put(
@@ -73,11 +75,27 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
     if (onUpdated) {
       onUpdated({ ...item, ...updatedData });
     }
+
+    toast.custom(() => (
+      <ToastCard
+        title="Berhasil"
+        variant="success"
+        description="Item berhasil diperbarui"
+      />
+    ));
   } catch (error) {
-    console.error(error);
     setLoading(false);
+
+    toast.custom(() => (
+      <ToastCard
+        title="Gagal"
+        variant="destructive"
+        description={error?.response?.data?.message || "Gagal memperbarui item"}
+      />
+    ));
   }
 };
+
 
 
   return (

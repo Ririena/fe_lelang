@@ -9,6 +9,8 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { uploadImage } from "@/lib/uploadImage";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ToastCard } from "@/components/ui/toast-card";
 export default function ItemFormDialog({onItemAdded}) {
   const { token, user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -31,47 +33,60 @@ export default function ItemFormDialog({onItemAdded}) {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      if (!formData.gambar) throw new Error("No image selected");
-      const image_url = await uploadImage(formData.gambar);
+  try {
+    if (!formData.gambar) throw new Error("No image selected");
+    const image_url = await uploadImage(formData.gambar);
 
-      await axios.post(
-        "http://localhost:3001/v2/items",
-        {
-          nama_barang: formData.nama_barang,
-          harga_awal: formData.harga_awal,
-          deskripsi: formData.deskripsi,
-          gambar: image_url,
+    await axios.post(
+      "http://localhost:3001/v2/items",
+      {
+        nama_barang: formData.nama_barang,
+        harga_awal: formData.harga_awal,
+        deskripsi: formData.deskripsi,
+        gambar: image_url,
+      },
+      {
+        headers: {
+          Authorization: `bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            Authorization: `bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      }
+    );
 
-      alert("Item added successfully!");
-      onItemAdded()
-      setFormData({
-        nama_barang: "",
-        harga_awal: "",
-        deskripsi: "",
-        gambar: null,
-      });
+    toast.custom(() => (
+      <ToastCard
+        title="Berhasil"
+        variant="success"
+        description="Item berhasil ditambahkan"
+      />
+    ));
 
-      router.refresh()
-    } catch (error) {
-      console.error(error);
-      alert("Error: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    onItemAdded();
+    setFormData({
+      nama_barang: "",
+      harga_awal: "",
+      deskripsi: "",
+      gambar: null,
+    });
+
+    router.refresh();
+  } catch (error) {
+    toast.custom(() => (
+      <ToastCard
+        title="Gagal"
+        variant="destructive"
+        description={error.message || "Terjadi kesalahan saat menambah item"}
+      />
+    ));
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <Dialog>

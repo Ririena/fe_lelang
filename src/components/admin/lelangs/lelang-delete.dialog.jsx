@@ -11,30 +11,56 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
+import { ToastCard } from "@/components/ui/toast-card";
 
-const LelangDeleteDialog = ({ open, onOpenChange, idLelang, onDeleteSuccess }) => {
+const LelangDeleteDialog = ({
+  open,
+  onOpenChange,
+  idLelang,
+  onDeleteSuccess,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const {token} = useAuth()
+  const { token } = useAuth();
 
   const handleDelete = async () => {
     setLoading(true);
     setError(null);
+
     try {
       await axios.delete(`http://localhost:3001/auctions/${idLelang}`, {
         headers: {
-            'Authorization': `bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
+
+      toast.custom((t) => (
+        <ToastCard
+          title="Berhasil dihapus"
+          description="Lelang telah dihapus dari sistem."
+          variant="success"
+        />
+      ));
+
       setLoading(false);
-      onDeleteSuccess(); 
-      onOpenChange(false); 
+      onDeleteSuccess();
+      onOpenChange(false);
     } catch (err) {
       setLoading(false);
-      setError("Gagal menghapus data.");
-      console.error(err);
+      const errorMessage =
+        err.response?.data?.error ||
+        err.message ||
+        "Terjadi kesalahan saat menghapus data.";
+      toast.custom((t) => (
+        <ToastCard
+          title="Gagal menghapus"
+          description={`Terjadi kesalahan saat menghapus data. ${errorMessage}`}
+          variant="error"
+        />
+      ));
     }
   };
 

@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-
+import { toast } from "sonner";
+import { ToastCard } from "@/components/ui/toast-card";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
@@ -27,13 +28,12 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   const [selectedBarang, setSelectedBarang] = useState("");
   const [tglLelang, setTglLelang] = useState("");
   const [tenggatWaktu, setTenggatWaktu] = useState("");
-  const router = useRouter()
+  const router = useRouter();
   const [loadingData, setLoadingData] = useState(true);
   const { user, token, loading } = useAuth();
   console.log(user);
   async function getBarang() {
     try {
-
       const resBarang = await axios.get("http://localhost:3001/v2/items", {
         headers: {
           "Content-Type": "application/json",
@@ -50,9 +50,8 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
       const semuaLelang = resLelang.data.data;
 
       console.log("Semua Barang:", semuaBarang);
-      console.log("Semua Lelang Aktif:", semuaLelang); 
+      console.log("Semua Lelang Aktif:", semuaLelang);
 
-   
       const idBarangLelangAktif = semuaLelang.map((lelang) => lelang.id_barang);
 
       console.log("Barang yang sedang dilelang:", idBarangLelangAktif); // Debug
@@ -85,14 +84,25 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
         },
       });
 
-      alert("Lelang Berhasil");
-   
+      toast.custom(() => (
+        <ToastCard
+          title="Sukses"
+          description="Lelang berhasil ditambahkan"
+          type="success"
+        />
+      ));
 
       if (onLelangAdded) {
         onLelangAdded();
       }
     } catch (error) {
-      console.error(error.message);
+      toast.custom(() => (
+        <ToastCard
+          title="Gagal"
+          description={`Gagal menambahkan lelang: ${error.message}`}
+          type="error"
+        />
+      ));
     }
   };
 

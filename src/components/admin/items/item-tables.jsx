@@ -31,7 +31,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import ItemEditDialog from "./item-edit-dialog";
-
+import { toast } from "sonner";
+import { ToastCard } from "@/components/ui/toast-card";
 export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [dataItems, setDataItems] = useState([]);
   const { token, loading } = useAuth();
@@ -39,7 +40,6 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
-
   const handleItemUpdated = (updatedItem) => {
     setDataItems((prevItems) =>
       prevItems.map((item) =>
@@ -98,11 +98,29 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
         setDataItems((prevItems) =>
           prevItems.filter((item) => item.id_barang !== id)
         );
-      }
 
-      console.log(res.data);
+        toast.custom(() => (
+          <ToastCard
+            title="Berhasil"
+            variant="success"
+            description="Item berhasil dihapus"
+          />
+        ));
+      }
     } catch (error) {
-      console.error(error.message);
+   
+
+      toast.custom(() => (
+        <ToastCard
+          title="Gagal"
+          variant="destructive"
+          description={
+            error.response?.data?.message ||
+            error.message ||
+            "Gagal menghapus item"
+          }
+        />
+      ));
     }
   };
 
@@ -177,9 +195,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                       <Separator />
                       <DropdownMenuItem>Copy Item ID</DropdownMenuItem>
                       <Separator />
-                      <DropdownMenuItem className="cursor-pointer">
-                        Lihat Detail Barang
-                      </DropdownMenuItem>
+
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={(e) => {
@@ -223,12 +239,13 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                 Batal
               </AlertDialogCancel>
               <AlertDialogAction
+              className="bg-red-600"
                 onClick={() => {
                   handleDelete(selectedItem);
                   setOpenDialog(false);
                 }}
               >
-                Ya, Hapus
+                <p className="">Ya, Hapus</p>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

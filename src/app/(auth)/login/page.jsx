@@ -9,17 +9,20 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { ServerCrash } from "lucide-react";
+import { ToastCard } from "@/components/ui/toast-card";
+import {CheckCircle } from "lucide-react";
 
 const LoginPage = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -36,23 +39,29 @@ const LoginPage = () => {
       );
 
       await login(res.data.token);
-      toast("Login Berhasil", {
-        description: (
-          <span className="text-gray-600">
-            {" "}
-            akan dialihkan ke halaman utama
-          </span>
-        ),
-        position: "top-center",
-      });
+      toast.custom(() => (
+        <ToastCard
+          variant="success"
+          title="Login Berhasil"
+          description="Akan dialihkan ke halaman utama"
+        />
+      ));
 
       setTimeout(() => {
         router.push("/", { scroll: false });
       }, 2000);
     } catch (error) {
-      console.error(error.response?.data?.message || "Login Failed");
+      toast.custom(() => (
+        <ToastCard
+          variant="error"
+          title="Login Gagal"
+          description={
+            error.response?.data?.message || "Terjadi kesalahan server"
+          }
+        />
+      ));
     } finally {
-setLoading(false)
+      setLoading(false);
     }
   };
 
