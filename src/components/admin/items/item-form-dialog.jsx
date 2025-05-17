@@ -56,6 +56,7 @@ export default function ItemFormDialog({onItemAdded}) {
       );
 
       alert("Item added successfully!");
+      onItemAdded()
       setFormData({
         nama_barang: "",
         harga_awal: "",

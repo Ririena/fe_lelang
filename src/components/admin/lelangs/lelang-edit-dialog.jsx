@@ -116,7 +116,7 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
               name="tenggat_waktu"
               value={tenggat_waktu}
               onChange={(e) => setTenggatWaktu(e.target.value)}
-              disabled={status === "tutup"} // disable input jika status tutup
+              disabled={status === "tutup"} 
             />
 
             <Label className="block text-sm font-medium text-gray-700 mb-1 mt-4">

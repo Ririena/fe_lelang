@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +12,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/context/AuthContext";
 import {
   BarChart3,
   Calendar,
@@ -24,10 +25,11 @@ import {
   Settings,
   ShoppingCart,
   Users,
-} from "lucide-react"
-
-import Link from "next/link"
+} from "lucide-react";
+import Link from "next/link";
 export function AdminSidebar() {
+  const { user } = useAuth();
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
@@ -123,12 +125,15 @@ export function AdminSidebar() {
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Avatar" />
+              <AvatarImage
+                src="/placeholder.svg?height=32&width=32"
+                alt="Avatar"
+              />
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-muted-foreground">admin@example.com</p>
+              <p className="text-sm font-medium">{user.username}</p>
+              <p className="text-xs text-muted-foreground">Admin</p>
             </div>
           </div>
           <button className="rounded-full p-1 hover:bg-muted">
@@ -139,5 +144,5 @@ export function AdminSidebar() {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

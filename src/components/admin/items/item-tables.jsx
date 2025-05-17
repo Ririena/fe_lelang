@@ -30,12 +30,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import ItemEditDialog from "./item-edit-dialog";
 
-export default function ItemTables({ trigger, onItemAdded, searchQuery, filterBy }) {
+export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [dataItems, setDataItems] = useState([]);
   const { token, loading } = useAuth();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+
+  const handleItemUpdated = (updatedItem) => {
+    setDataItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id_barang === updatedItem.id_barang ? updatedItem : item
+      )
+    );
+  };
 
   // Filter and sort items based on search query and filter selection
   const filteredItems = useMemo(() => {
@@ -44,26 +55,27 @@ export default function ItemTables({ trigger, onItemAdded, searchQuery, filterBy
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((item) => 
-        item.nama_barang.toLowerCase().includes(query) ||
-        item.deskripsi.toLowerCase().includes(query) ||
-        item.id_barang.toString().includes(query) ||
-        item.harga_awal.toString().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          item.nama_barang.toLowerCase().includes(query) ||
+          item.deskripsi.toLowerCase().includes(query) ||
+          item.id_barang.toString().includes(query) ||
+          item.harga_awal.toString().includes(query)
       );
     }
 
     // Apply sorting based on filterBy
     switch (filterBy) {
-      case 'price_asc':
+      case "price_asc":
         filtered.sort((a, b) => a.harga_awal - b.harga_awal);
         break;
-      case 'price_desc':
+      case "price_desc":
         filtered.sort((a, b) => b.harga_awal - a.harga_awal);
         break;
-      case 'name_asc':
+      case "name_asc":
         filtered.sort((a, b) => a.nama_barang.localeCompare(b.nama_barang));
         break;
-      case 'name_desc':
+      case "name_desc":
         filtered.sort((a, b) => b.nama_barang.localeCompare(a.nama_barang));
         break;
       default:
@@ -117,14 +129,10 @@ export default function ItemTables({ trigger, onItemAdded, searchQuery, filterBy
   }
 
   useEffect(() => {
-    getAll();
-  }, [token, trigger, loading]);
-
-  useEffect(() => {
-    if (!loading) {
+    if (!loading && token) {
       getAll();
     }
-  }, [onItemAdded]);
+  }, [refreshTrigger, loading, token]);
 
   if (!dataItems.length) {
     return <div>Loading...</div>;
@@ -172,9 +180,17 @@ export default function ItemTables({ trigger, onItemAdded, searchQuery, filterBy
                       <DropdownMenuItem className="cursor-pointer">
                         Lihat Detail Barang
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setEditItem(data);
+                          setEditDialogOpen(true);
+                        }}
+                      >
                         Edit Barang
                       </DropdownMenuItem>
+
                       <DropdownMenuItem
                         className="cursor-pointer text-red-600"
                         onSelect={(e) => {
@@ -218,6 +234,12 @@ export default function ItemTables({ trigger, onItemAdded, searchQuery, filterBy
           </AlertDialogContent>
         </AlertDialog>
       </div>
+      <ItemEditDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        item={editItem}
+        onUpdated={handleItemUpdated}
+      />
     </main>
   );
 }

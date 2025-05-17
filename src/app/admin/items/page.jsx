@@ -15,12 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
 
 const AdminPageItems = () => {
-  const [trigger, setTrigger] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
   const [filterBy, setFilterBy] = useState("all");
-
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleItemAdded = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
   return (
     <SidebarProvider>
       <AdminSidebar />
@@ -30,7 +33,8 @@ const AdminPageItems = () => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-xl font-semibold">Items Data</h1>
             <ItemFormDialog
-              onItemAdded={() => setTrigger((prev) => prev + 1)}
+              onItemAdded={handleItemAdded}
+              refreshTrigger={refreshTrigger}
             />
           </div>
           <div className="flex gap-4 mb-4">
@@ -54,7 +58,7 @@ const AdminPageItems = () => {
             </Select>
           </div>
           <ItemTables
-            trigger={trigger}
+            refreshTrigger={refreshTrigger}
             searchQuery={searchQuery}
             filterBy={filterBy}
           />
