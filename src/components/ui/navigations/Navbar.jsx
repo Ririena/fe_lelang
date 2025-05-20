@@ -91,7 +91,14 @@ const Navbar = () => {
                 </Link>
               </>
             )} */}
-
+            <Link href="/profile" className="hidden md:block">
+              <Button
+                variant="ghost"
+                className="text-sm font-medium hover:text-orange-500 transition-colors cursor-pointer"
+              >
+                Profile
+              </Button>
+            </Link>
             <Sheet>
               <SheetTrigger asChild>
                 <button className="md:hidden">
@@ -106,7 +113,6 @@ const Navbar = () => {
                   <SheetTitle className="text-orange-500 text-3xl font-semibold">
                     Tawarin.com
                   </SheetTitle>
-             
                 </SheetHeader>
 
                 <nav className="flex flex-col gap-6 text-xl font-medium">

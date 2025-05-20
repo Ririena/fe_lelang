@@ -7,6 +7,8 @@ import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
 import HeadersInsets from "@/components/admin/headers-inset";
 import { Input } from "@/components/ui/input";
+import html2canvas from "html2canvas-pro";
+import jsPDF from "jspdf";
 
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -21,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 const AdminLelangPage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,12 +105,58 @@ const AdminLelangPage = () => {
     }
   }, [token, loading]);
 
+  const generatePDF = async () => {
+    const element = document.getElementById("lelang-detail-pdf");
+    if (!element) {
+      console.error("Element tidak ditemukan");
+      return;
+    }
+
+    element.classList.add("pdf-export");
+    element.style.maxHeight = "297mm"; 
+    element.style.overflow = "hidden";
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: true,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      const imgProps = { width: canvas.width, height: canvas.height };
+      const scaleX = pdfWidth / imgProps.width;
+      const scaleY = pdfHeight / imgProps.height;
+      const scale = Math.min(scaleX, scaleY);
+
+      const imgWidthScaled = imgProps.width * scale;
+      const imgHeightScaled = imgProps.height * scale;
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidthScaled, imgHeightScaled);
+      pdf.save(`Auction_Report_${detailData?.id_lelang || "data"}.pdf`);
+    } catch (error) {
+      console.error("Error generate PDF:", error);
+    } finally {
+      element.classList.remove("pdf-export");
+      element.style.maxHeight = "";
+      element.style.overflow = "";
+    }
+  };
+
   return (
     <SidebarProvider>
       <AdminSidebar />
       <SidebarInset>
         <HeadersInsets />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6" id="lelang-detail-pdf">
           <BreadCrumbUrl />
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold mt-4">Data History Bids</h1>
@@ -213,6 +262,9 @@ const AdminLelangPage = () => {
                 </Table>
               </div>
             </div>
+            <Button onClick={generatePDF} className="mb-6">
+              Download Laporan PDF
+            </Button>
           </Card>
         </main>
       </SidebarInset>

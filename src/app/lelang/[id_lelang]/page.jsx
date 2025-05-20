@@ -4,11 +4,12 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { html2pdf } from "html2pdf.js";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -176,13 +177,18 @@ const DetailLelangPage = () => {
     }
   };
 
+ 
+
   return (
     <main className="container mx-auto p-4 md:p-6">
       <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mt-6 md:mt-12 mb-6">
         Detail Lelang
       </h1>
 
-      <section className="flex flex-col lg:flex-row gap-6 md:gap-8">
+      <section
+        id="lelang-detail-pdf"
+        className="flex flex-col lg:flex-row gap-6 md:gap-8"
+      >
         {/* Image Section */}
         <div className="w-full lg:w-1/2 flex justify-center">
           <div className="relative w-full max-w-lg aspect-square rounded-lg overflow-hidden ">
@@ -205,7 +211,6 @@ const DetailLelangPage = () => {
               <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4">
                 {detailDataBarang.nama_barang}
               </h1>
-         
 
               <section className="bg-[#FFF7ED] border border-[#F4DEC3] rounded-lg p-4 mb-6">
                 <div className="flex justify-between items-center mb-2">
@@ -357,7 +362,9 @@ const DetailLelangPage = () => {
                 </p>
               )}
             </div>
+    
           </CardContent>
+
         </Card>
       </section>
     </main>

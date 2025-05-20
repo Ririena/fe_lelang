@@ -120,3 +120,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.pdf-export, .pdf-export * {
+  color: #222 !important;
+  background: #fff !important;
+}

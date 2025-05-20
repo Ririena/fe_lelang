@@ -4,8 +4,25 @@ import ProfileNavigation from "./profile-navigation";
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 export const ProfileMenu = ({ data }) => {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
   return (
     <>
       <Card>
@@ -36,13 +53,32 @@ export const ProfileMenu = ({ data }) => {
           <Separator className="my-4" />
           <ProfileNavigation />
 
-          <Button
-            variant="outline"
-            className="w-full mt-6 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Keluar
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full mt-6 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Keluar
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Keluar dari akun?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Apakah kamu yakin ingin keluar? Kamu harus login kembali untuk
+                  mengakses akunmu.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction className="bg-red-600 hover:bg-red-700 hover:cursor-pointer" onClick={handleLogout}>
+                  Ya, Keluar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </>
