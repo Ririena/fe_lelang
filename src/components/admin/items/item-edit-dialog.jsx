@@ -59,7 +59,7 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
     };
 
     await axios.put(
-      `http://localhost:3001/v2/items/${item.id_barang}`,
+      `https://be-lelang.vercel.app/v2/items/${item.id_barang}`,
       updatedData,
       {
         headers: {

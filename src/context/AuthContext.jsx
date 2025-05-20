@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
-      axios.get('http://localhost:3001/profile', {
+      axios.get('https://be-lelang.vercel.app/profile', {
         headers: { 'Authorization': `Bearer ${token}` },
       })
       .then(res => {
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('token', token)
 
     try {
-      const res = await axios.get('http://localhost:3001/profile', {
+      const res = await axios.get('https://be-lelang.vercel.app/profile', {
         headers: { Authorization: `Bearer ${token}` },
       })
 

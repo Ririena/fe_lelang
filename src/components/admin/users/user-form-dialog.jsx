@@ -47,7 +47,7 @@ const UserFormDialog = ({ onUserAdded }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3001/add-users", userForm, {
+      const res = await axios.post("https://be-lelang.vercel.app/add-users", userForm, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `bearer ${token}`

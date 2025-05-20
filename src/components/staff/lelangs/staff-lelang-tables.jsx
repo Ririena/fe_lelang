@@ -41,7 +41,7 @@ export function StaffLelangTables({ trigger }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3001/lelangs/${id}`, {
+      const res = await axios.delete(`https://be-lelang.vercel.app/lelangs/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

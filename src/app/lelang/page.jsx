@@ -23,7 +23,7 @@ const PageLelang = () => {
 
   async function fetchFeatured() {
     try {
-      const res = await axios.get("http://localhost:3001/auctions/featured", {
+      const res = await axios.get("https://be-lelang.vercel.app/auctions/featured", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -40,7 +40,7 @@ const PageLelang = () => {
 
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/auctions", {
+      const res = await axios.get("https://be-lelang.vercel.app/auctions", {
         headers: {
           "Content-Type": "application/json",
         },

@@ -36,7 +36,7 @@ const AdminLelangPage = () => {
   async function init() {
     try {
       const res = await axios.get(
-        `http://localhost:3001/auctions/${id_lelang}`,
+        `https://be-lelang.vercel.app/auctions/${id_lelang}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -76,7 +76,7 @@ const AdminLelangPage = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3001/v2/items/${id_barang}`,
+        `https://be-lelang.vercel.app/v2/items/${id_barang}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -34,13 +34,13 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   console.log(user);
   async function getBarang() {
     try {
-      const resBarang = await axios.get("http://localhost:3001/v2/items", {
+      const resBarang = await axios.get("https://be-lelang.vercel.app/v2/items", {
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const resLelang = await axios.get("http://localhost:3001/auctions", {
+      const resLelang = await axios.get("https://be-lelang.vercel.app/auctions", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -77,7 +77,7 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
         tenggatWaktu: new Date(tenggatWaktu).toISOString(),
       };
 
-      await axios.post("http://localhost:3001/auctions", payload, {
+      await axios.post("https://be-lelang.vercel.app/auctions", payload, {
         headers: {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/json",

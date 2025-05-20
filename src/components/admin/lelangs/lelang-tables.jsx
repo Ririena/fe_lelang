@@ -101,7 +101,7 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
 
   const init = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/auctions-full", {
+      const res = await axios.get("https://be-lelang.vercel.app/auctions-full", {
         headers: {
           "Content-Type": "application/json",
         },

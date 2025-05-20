@@ -42,7 +42,7 @@ const RegisterPage = () => {
       return;
     }
     try {
-      await axios.post("https://belelang.vercel.app/register", registerForm, {
+      await axios.post("https://be-lelang.vercel.app/register", registerForm, {
         headers: {
           "Content-Type": "application/json",
         },

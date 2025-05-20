@@ -42,7 +42,7 @@ const handleSubmit = async (e) => {
     const image_url = await uploadImage(formData.gambar);
 
     await axios.post(
-      "http://localhost:3001/v2/items",
+      "https://be-lelang.vercel.app/v2/items",
       {
         nama_barang: formData.nama_barang,
         harga_awal: formData.harga_awal,

@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
   async function fetchHistory() {
     try {
-      const res = await axios.get("http://localhost:3001/v7/history-desc", {
+      const res = await axios.get("https://be-lelang.vercel.app/v7/history-desc", {
         headers: {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/json",

@@ -105,7 +105,7 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3001/users/${id}`, {
+      const res = await axios.delete(`https://be-lelang.vercel.app/users/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -121,7 +121,7 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
 
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/users", {
+      const res = await axios.get("https://be-lelang.vercel.app/users", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
