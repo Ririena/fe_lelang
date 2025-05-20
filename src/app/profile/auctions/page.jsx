@@ -9,7 +9,7 @@ import { ProfileMenu } from "@/components/profile/profile-menu";
 import ProfileEdit from "@/components/profile/profile-edit";
 import ProfileBids from "@/components/profile/profile-bids";
 
-const ProfileSettingsPage = () => {
+const ProfileAuctionsPage = () => {
   const [data, setData] = useState("");
   const [offers, setOffers] = useState([]);
   const [myBids, setMyBids] = useState([]);
@@ -85,11 +85,11 @@ const ProfileSettingsPage = () => {
 
         {/* Tabs Content */}
         <div className="col-span-12">
-          <ProfileEdit data={data} />
+          <ProfileBids myBids={myBids} />
         </div>
       </div>
     </main>
   );
 };
 
-export default ProfileSettingsPage;
+export default ProfileAuctionsPage;

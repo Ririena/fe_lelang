@@ -12,31 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+
 const PageLelang = () => {
   const [lelangData, setLelangData] = useState([]);
-  const [profile, setProfile] = useState("");
-  const [featuredData, setFeaturedData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [sortFilter, setSortFilter] = useState("default");
   const { token, loading } = useAuth();
-
-  async function fetchFeatured() {
-    try {
-      const res = await axios.get("http://localhost:3001/auctions/featured", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!loading) {
-        console.table(res.data.data);
-        setFeaturedData(res.data.data);
-      }
-    } catch (error) {
-      console.error(error.message);
-    }
-  }
 
   async function init() {
     try {
@@ -46,7 +31,6 @@ const PageLelang = () => {
         },
       });
       if (!loading) {
-        console.table(res.data.data);
         setLelangData(res.data.data);
       }
     } catch (error) {
@@ -55,19 +39,34 @@ const PageLelang = () => {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading) {
       init();
-      fetchFeatured();
     }
   }, [loading]);
 
-  const products = Array(9).fill({
-    title: "Visual Novel VE",
-    price: "Rp 125.000",
-    bids: "15 Penawaran",
-    image: "/auction-landing.jpg",
-  });
+  const filteredData = lelangData
+    .filter((item) =>
+      item.nama_barang.toLowerCase().includes(searchText.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortFilter) {
+        case "price-low":
+          return a.harga_akhir - b.harga_akhir;
+        case "price-high":
+          return b.harga_akhir - a.harga_akhir;
+        case "most-bids":
+          return b.jumlah_penawaran - a.jumlah_penawaran;
+        case "least-bids":
+          return a.jumlah_penawaran - b.jumlah_penawaran;
+        case "default":
+        default:
+          return (
+            new Date(b.tanggal_post || 0).getTime() -
+            new Date(a.tanggal_post || 0).getTime()
+          );
+      }
+    });
 
   const categories = [
     { name: "Semua Kategori", count: 1245 },
@@ -76,55 +75,10 @@ const PageLelang = () => {
     { name: "Perhiasan", count: 34 },
     { name: "Kendaraan", count: 324 },
   ];
+
   return (
     <>
       <main className="mt-12">
-        <section>
-          <h2 className="text-xl font-bold mb-4">Lelang Unggulan</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {featuredData.map((product) => (
-              <div
-                key={`featured-${product.id_lelang}`}
-                className="border rounded-md overflow-hidden bg-white"
-              >
-                <Link href={`/lelang/${product.id_lelang}`}>
-                  <div className="bg-gray-100 sm:h-[200px] md:h-[300px] overflow-hidden">
-                    <Image
-                      src={product.gambar || "/placeholder.svg"}
-                      alt="test"
-                      width={500}
-                      height={500}
-                      className=" h-[300px] transition-transform hover:scale-105"
-                    />
-                  </div>
-                </Link>
-                <div className="p-3">
-                  <Link href={`/lelang/${product.id_barang}`}>
-                    <h3 className="font-medium">{product.nama_barang}</h3>
-                  </Link>
-                  <p className="text-xs text-gray-500">
-                    {product.jumlah_penawaran} Penawaran
-                  </p>
-                  <p className="text-orange-500 font-bold">
-                    Rp. {product.harga_akhir.toLocaleString("id-ID")}
-                  </p>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-500">
-                      {product.bids}
-                    </span>
-                    <Button
-                      size="sm"
-                      className="bg-orange-500 hover:bg-orange-600 text-xs px-3 py-1 h-auto"
-                    >
-                      Tawar
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
           {/* Categories Sidebar */}
           <div className="border rounded-md p-4">
@@ -147,23 +101,37 @@ const PageLelang = () => {
                   type="search"
                   placeholder="Cari Barang Lelang"
                   className="pl-8"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
                 />
               </div>
-              <Select defaultValue="default">
+              <Select
+                value={sortFilter}
+                onValueChange={(value) => setSortFilter(value)}
+              >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Segera Berakhir" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="default">Segera Berakhir</SelectItem>
+                  <SelectItem value="default">Terbaru</SelectItem>
                   <SelectItem value="price-low">Harga Terendah</SelectItem>
                   <SelectItem value="price-high">Harga Tertinggi</SelectItem>
-                  <SelectItem value="newest">Terbaru</SelectItem>
+                  <SelectItem value="most-bids">Penawaran Terbanyak</SelectItem>
+                  <SelectItem value="least-bids">
+                    Penawaran Tersedikit
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
-              {lelangData.map((lelang) => (
-                <div
+              {filteredData.map((lelang, index) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   key={`${lelang.id_barang}`}
                   className="border rounded-md overflow-hidden bg-white"
                 >
@@ -198,7 +166,7 @@ const PageLelang = () => {
                       </Button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

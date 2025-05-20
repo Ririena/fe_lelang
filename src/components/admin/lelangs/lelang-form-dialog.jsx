@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { ToastCard } from "@/components/ui/toast-card";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { Label } from "@/components/ui/label";
 
 const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   const [dataBarang, setDataBarang] = useState([]);
@@ -31,6 +32,8 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   const router = useRouter();
   const [loadingData, setLoadingData] = useState(true);
   const { user, token, loading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   console.log(user);
   async function getBarang() {
     try {
@@ -68,7 +71,7 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
   }, [loading, onLelangAdded, refreshTrigger]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     try {
       const payload = {
         id_barang: selectedBarang,
@@ -95,6 +98,7 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
       if (onLelangAdded) {
         onLelangAdded();
       }
+      setIsOpen(false)
     } catch (error) {
       toast.custom(() => (
         <ToastCard
@@ -103,12 +107,14 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
           type="error"
         />
       ));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="orange">Tambah Lelang</Button>
         </DialogTrigger>
@@ -119,8 +125,12 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
           </DialogDescription>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
-            <Select value={selectedBarang} onValueChange={setSelectedBarang}>
-              <SelectTrigger className="w-full">
+            <Select
+              value={selectedBarang}
+              onValueChange={setSelectedBarang}
+              disabled={isSubmitting}
+            >
+              <SelectTrigger className="w-full" disabled={isSubmitting}>
                 <SelectValue placeholder="Pilih Barang" />
               </SelectTrigger>
               <SelectContent>
@@ -130,6 +140,7 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
                     <SelectItem
                       key={barang.id_barang}
                       value={String(barang.id_barang)}
+                      disabled={isSubmitting}
                     >
                       {barang.nama_barang}
                     </SelectItem>
@@ -138,22 +149,29 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
               </SelectContent>
             </Select>
 
+            <Label htmlFor="tgl_lelang">Created At</Label>
             <Input
               type="datetime-local"
               name="tgl_lelang"
               value={tglLelang}
               onChange={(e) => setTglLelang(e.target.value)}
               required
+              disabled={isSubmitting}
             />
+
+            <Label htmlFor="tenggat_waktu">Deadline</Label>
             <Input
               type="datetime-local"
               name="tenggat_waktu"
               value={tenggatWaktu}
               onChange={(e) => setTenggatWaktu(e.target.value)}
               required
+              disabled={isSubmitting}
             />
 
-            <Button type="submit">Submit</Button>
+            <Button variant="orange" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Loading..." : "Submit"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

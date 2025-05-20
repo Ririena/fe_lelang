@@ -21,6 +21,8 @@ export default function ItemFormDialog({onItemAdded}) {
     gambar: null,
   });
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const router = useRouter()
 
   console.log(user)
@@ -73,7 +75,7 @@ const handleSubmit = async (e) => {
       gambar: null,
     });
 
-    router.refresh();
+    setIsOpen(false);
   } catch (error) {
     toast.custom(() => (
       <ToastCard
@@ -89,7 +91,7 @@ const handleSubmit = async (e) => {
 
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="orange">Add New Item</Button>
       </DialogTrigger>

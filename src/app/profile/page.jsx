@@ -8,6 +8,7 @@ import ProfileOffers from "@/components/profile/profile-offers";
 import { ProfileMenu } from "@/components/profile/profile-menu";
 import ProfileEdit from "@/components/profile/profile-edit";
 import ProfileBids from "@/components/profile/profile-bids";
+
 const ProfilePage = () => {
   const [data, setData] = useState("");
   const [offers, setOffers] = useState([]);
@@ -31,6 +32,7 @@ const ProfilePage = () => {
       console.error(error.message);
     }
   };
+
   const fetchOffers = async () => {
     try {
       const res = await axios.get("http://localhost:3001/v1/my-offer", {
@@ -68,51 +70,59 @@ const ProfilePage = () => {
   useEffect(() => {
     if (!loading && token) {
       fetchDataUser();
-
       fetchOffers();
       fetchBids();
     }
   }, [loading, token]);
 
   return (
-    <>
-      <main className="container px-4 py-8 mx-auto">
-        <div className="grid gap-8 md:grid-cols-12">
-          <div className="md:col-span-3">
-            <ProfileMenu data={data} />
-          </div>
+    <main className="container px-4 py-6 mx-auto max-w-7xl">
+      <div className="grid gap-6 md:grid-cols-12">
+        {/* Profile Menu */}
+        <div className="col-span-12">
+          <ProfileMenu data={data} />
+        </div>
 
-          {/* Main Content */}
-          <div className="md:col-span-9">
-            <Tabs defaultValue="profile">
-              <div className="flex items-center justify-between mb-4">
-                <TabsList className="grid w-full  gap-4 grid-cols-3 ">
-                  <TabsTrigger value="profile">Informasi Pribadi</TabsTrigger>
-                  <TabsTrigger value="bids">Penawaran Saya</TabsTrigger>
-                  <TabsTrigger value="offers">
-                    Lelang Dimenangkan Saya
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+        {/* Tabs Content */}
+        <div className="col-span-12">
+          <Tabs defaultValue="profile">
+            {/* Responsive Tab List */}
+            <TabsList className="flex flex-wrap gap-2 justify-center mb-4">
+              <TabsTrigger
+                value="profile"
+                className="flex-1 min-w-[120px] sm:min-w-[160px]"
+              >
+                Informasi Pribadi
+              </TabsTrigger>
+              <TabsTrigger
+                value="bids"
+                className="flex-1 min-w-[120px] sm:min-w-[160px]"
+              >
+                Penawaran Saya
+              </TabsTrigger>
+              <TabsTrigger
+                value="offers"
+                className="flex-1 min-w-[120px] sm:min-w-[160px]"
+              >
+                Lelang Dimenangkan
+              </TabsTrigger>
+            </TabsList>
 
+            <div className="min-h-[300px]">
               <TabsContent value="profile" className="mt-0">
-     
-                  <ProfileEdit />
-           
+                <ProfileEdit />
               </TabsContent>
-
               <TabsContent value="bids" className="mt-0">
                 <ProfileBids myBids={myBids} />
               </TabsContent>
-
               <TabsContent value="offers" className="mt-0">
                 <ProfileOffers offers={offers} />
               </TabsContent>
-            </Tabs>
-          </div>
+            </div>
+          </Tabs>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 };
 

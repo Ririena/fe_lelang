@@ -33,6 +33,24 @@ import {
 import ItemEditDialog from "./item-edit-dialog";
 import { toast } from "sonner";
 import { ToastCard } from "@/components/ui/toast-card";
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [dataItems, setDataItems] = useState([]);
   const { token, loading } = useAuth();
@@ -40,6 +58,10 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
   const handleItemUpdated = (updatedItem) => {
     setDataItems((prevItems) =>
       prevItems.map((item) =>
@@ -48,11 +70,9 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
     );
   };
 
-  // Filter and sort items based on search query and filter selection
   const filteredItems = useMemo(() => {
     let filtered = [...dataItems];
 
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -64,7 +84,6 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
       );
     }
 
-    // Apply sorting based on filterBy
     switch (filterBy) {
       case "price_asc":
         filtered.sort((a, b) => a.harga_awal - b.harga_awal);
@@ -79,12 +98,22 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
         filtered.sort((a, b) => b.nama_barang.localeCompare(a.nama_barang));
         break;
       default:
-        // No sorting for 'all'
         break;
     }
 
     return filtered;
   }, [dataItems, searchQuery, filterBy]);
+
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  useEffect(() => {
+  setCurrentPage(1);
+}, [searchQuery, filterBy, itemsPerPage]);
+
 
   const handleDelete = async (id) => {
     try {
@@ -108,8 +137,6 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
         ));
       }
     } catch (error) {
-   
-
       toast.custom(() => (
         <ToastCard
           title="Gagal"
@@ -136,7 +163,6 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
       if (!loading) {
         if (res.data && res.data.data) {
           setDataItems(res.data.data);
-          console.log(res.data.data);
         } else {
           console.error("No data found in the response");
         }
@@ -156,6 +182,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
     return <div>Loading...</div>;
   }
 
+
   return (
     <main className="mt-12">
       <div className="rounded-md">
@@ -172,7 +199,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
           </TableHeader>
 
           <TableBody>
-            {filteredItems.map((data) => (
+            {paginatedItems.map((data) => (
               <TableRow key={data.id_barang}>
                 <TableCell>{data.id_barang}</TableCell>
                 <TableCell>{data.nama_barang}</TableCell>
@@ -224,6 +251,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
             ))}
           </TableBody>
         </Table>
+
         <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -239,7 +267,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                 Batal
               </AlertDialogCancel>
               <AlertDialogAction
-              className="bg-red-600"
+                className="bg-red-600"
                 onClick={() => {
                   handleDelete(selectedItem);
                   setOpenDialog(false);
@@ -251,12 +279,69 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
           </AlertDialogContent>
         </AlertDialog>
       </div>
+
       <ItemEditDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         item={editItem}
         onUpdated={handleItemUpdated}
       />
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between mt-4">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  isActive={page === currentPage}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                className={
+                  currentPage === totalPages ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+
+        <div className="flex items-center gap-2">
+          <span className="text-sm">Items per page:</span>
+          <Select
+            defaultValue={itemsPerPage.toString()}
+            onValueChange={(value) => {
+              setItemsPerPage(parseInt(value));
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 20, 50].map((num) => (
+                <SelectItem key={num} value={num.toString()}>
+                  {num}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </main>
   );
 }

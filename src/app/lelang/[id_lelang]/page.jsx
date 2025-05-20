@@ -185,18 +185,15 @@ const DetailLelangPage = () => {
       <section className="flex flex-col lg:flex-row gap-6 md:gap-8">
         {/* Image Section */}
         <div className="w-full lg:w-1/2 flex justify-center">
-          <div className="relative w-full max-w-lg aspect-square rounded-lg overflow-hidden shadow-md">
+          <div className="relative w-full max-w-lg aspect-square rounded-lg overflow-hidden ">
             <Image
               src={detailDataBarang.gambar || "/fallback.jpg"}
               alt={detailDataBarang?.nama_barang || "Barang"}
               fill
-              className="object-contain"
+              className="object-contain w-full h-full"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
               priority
-              style={{
-                objectFit: "contain",
-                padding: "1rem", // Add some padding around the image
-              }}
+              // Removed inline style for padding
             />
           </div>
         </div>
@@ -205,13 +202,10 @@ const DetailLelangPage = () => {
         <div className="w-full lg:w-1/2">
           <Card className="w-full h-full rounded-lg shadow-lg">
             <CardContent className="p-4 sm:p-6">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4">
                 {detailDataBarang.nama_barang}
               </h1>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Badge variant="orange">Visual Novel</Badge>
-                <Badge variant="orange">Books</Badge>
-              </div>
+         
 
               <section className="bg-[#FFF7ED] border border-[#F4DEC3] rounded-lg p-4 mb-6">
                 <div className="flex justify-between items-center mb-2">
@@ -351,7 +345,6 @@ const DetailLelangPage = () => {
                       <p className="font-medium text-sm sm:text-base">
                         {item.username}
                       </p>
-                 
                     </div>
                     <p className="font-semibold text-orange-500 text-sm sm:text-base">
                       Rp {item.harga_penawaran.toLocaleString("id-ID")}

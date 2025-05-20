@@ -37,15 +37,15 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold md:text-3xl max-w-lg mb-1">
+      {/* <section className="container mx-auto px-4 py-8"> */}
+      {/* <h1 className="text-2xl font-bold md:text-3xl max-w-lg mb-1">
           Lelang Unggulan
-        </h1>
-        <section>
-          <FeaturedAuctions/>
-        </section>
-        <div className="mb-20"></div>
-      </section>
+        </h1> */}
+      {/* <section> */}
+      {/* <FeaturedAuctions/> */}
+      {/* </section> */}
+      {/* <div className="mb-20"></div> */}
+      {/* </section> */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <div className=" mb-12">

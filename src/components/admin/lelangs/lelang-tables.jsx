@@ -1,4 +1,13 @@
 "use client";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import React, { useEffect, useState, useMemo } from "react";
 import {
   Table,
@@ -43,6 +52,11 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
   const [selectedLelang, setSelectedLelang] = useState(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Filter & sort data based on searchQuery and filterBy
   const filteredLelangs = useMemo(() => {
     let filtered = [...dataLelang];
 
@@ -99,6 +113,16 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
     return filtered;
   }, [dataLelang, searchQuery, filterBy]);
 
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredLelangs.length / itemsPerPage);
+
+  // Slice data to only show current page items
+  const paginatedLelangs = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredLelangs.slice(startIndex, endIndex);
+  }, [filteredLelangs, currentPage]);
+
   const init = async () => {
     try {
       const res = await axios.get("http://localhost:3001/auctions-full", {
@@ -117,7 +141,7 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
     }
   };
 
-  const handleEdit = (lelang, items) => {
+  const handleEdit = (lelang) => {
     setSelectedLelang(lelang);
     setEditDialogOpen(true);
   };
@@ -151,6 +175,13 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
     init();
   }, [token, refreshTrigger]);
 
+  // Reset current page if filteredLelangs length changes and current page is out of range
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
+
   if (!dataLelang.length) {
     return <div>Loading...</div>;
   }
@@ -172,7 +203,7 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLelangs.map((data) => (
+              {paginatedLelangs.map((data) => (
                 <TableRow key={data.id_lelang}>
                   <TableCell>{data.id_lelang}</TableCell>
                   <TableCell>{data.id_barang}</TableCell>
@@ -214,7 +245,53 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
               ))}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
         </div>
+        <Pagination className="mt-4">
+          <PaginationPrevious
+            onClick={() => {
+              if (currentPage > 1) setCurrentPage(currentPage - 1);
+            }}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </PaginationPrevious>
+          <PaginationContent>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(
+                (page) =>
+                  page === 1 ||
+                  page === totalPages ||
+                  (page >= currentPage - 1 && page <= currentPage + 1)
+              )
+              .reduce((acc, page, idx, arr) => {
+                const prevPage = arr[idx - 1];
+                if (idx > 0 && page - prevPage > 1) {
+                  acc.push(<PaginationEllipsis key={`ellipsis-${page}`} />);
+                }
+                acc.push(
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      aria-current={page === currentPage ? "page" : undefined}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+                return acc;
+              }, [])}
+          </PaginationContent>
+          <PaginationNext
+            onClick={() => {
+              if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+            }}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </PaginationNext>
+        </Pagination>
       </main>
 
       {selectedLelang && (

@@ -1,12 +1,25 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { Button } from "../button";
 import { useAuth } from "@/context/AuthContext";
+import { AlignJustify } from "lucide-react";
+import { Button } from "../button";
+import { Label } from "../label";
+import { X } from "lucide-react";
+import { Input } from "../input";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Separator } from "../separator";
 const Navbar = () => {
   const { token, loading } = useAuth();
-
-
 
   return (
     <>
@@ -50,7 +63,7 @@ const Navbar = () => {
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            {token ? (
+            {/* {token ? (
               <>
                 <Link href="/profile">
                   <Button
@@ -77,7 +90,84 @@ const Navbar = () => {
                   </Button>
                 </Link>
               </>
-            )}
+            )} */}
+
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="md:hidden">
+                  <AlignJustify size={24} />
+                </button>
+              </SheetTrigger>
+              <SheetContent
+                side="top" // bisa juga 'left' atau 'right' tergantung style kamu
+                className="p-8 w-full h-full max-w-none bg-white" // full screen
+              >
+                <SheetHeader className="flex justify-between items-center mb-8">
+                  <SheetTitle className="text-orange-500 text-3xl font-semibold">
+                    Tawarin.com
+                  </SheetTitle>
+             
+                </SheetHeader>
+
+                <nav className="flex flex-col gap-6 text-xl font-medium">
+                  <SheetClose asChild>
+                    <Link href="/" className="hover:text-orange-500">
+                      Home
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link className="hover:text-orange-500" href="/lelang">
+                      Auctions
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link className="hover:text-orange-500" href="#">
+                      Categories
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link className="hover:text-orange-500" href="#">
+                      How It Works
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link href="#">Contact</Link>
+                  </SheetClose>
+                </nav>
+
+                {/* Auth Links */}
+                {/* {!loading && (
+                  <div className="mt-auto pt-8 border-t border-gray-200 flex flex-col gap-4">
+                    {token ? (
+                      <SheetClose asChild>
+                        <Link href="/profile">
+                          <a className="text-lg font-semibold text-orange-500 hover:underline">
+                            Profile
+                          </a>
+                        </Link>
+                      </SheetClose>
+                    ) : (
+                      <>
+                        <SheetClose asChild>
+                          <Link href="/login">
+                            <a className="text-lg hover:text-orange-500">
+                              Sign In
+                            </a>
+                          </Link>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <Link href="/register">
+                            <a className="text-lg font-semibold bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 text-center">
+                              Register
+                            </a>
+                          </Link>
+                        </SheetClose>
+                      </>
+                    )}
+                  </div>
+                )} */}
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>

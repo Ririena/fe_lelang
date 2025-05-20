@@ -8,8 +8,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
-
-const ProfileBids = ({myBids}) => {
+const ProfileBids = ({ myBids }) => {
   const [history, setHistory] = useState([]);
   return (
     <main className="p-4">
@@ -32,13 +31,20 @@ const ProfileBids = ({myBids}) => {
                   key={bid.id_history}
                   className="flex items-center p-4 border rounded-lg hover:bg-gray-50"
                 >
-                  <Image
-                    src={bid.gambar}
-                    alt={bid.nama_barang}
-                    width={64}
-                    height={64}
-                    className="rounded-md object-cover"
-                  />
+                  {bid.gambar ? (
+                    <Image
+                      src={bid.gambar}
+                      alt={bid.nama_barang}
+                      width={64}
+                      height={64}
+                      className="rounded-md object-cover"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center text-gray-500 text-sm">
+                      No Image
+                    </div>
+                  )}
+
                   <div className="ml-4 flex-1">
                     <h4 className="text-md font-semibold">{bid.nama_barang}</h4>
                     <p className="text-sm text-gray-500">

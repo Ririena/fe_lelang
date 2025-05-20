@@ -36,15 +36,15 @@ export default function ProfileNavigation() {
   return (
     <nav className="space-y-1 text-left">
       <NavLink href="/profile" Icon={User}>
-        Profil Saya
+        Profile
       </NavLink>
 
-      <NavLink href="/profile/payment" Icon={CreditCard}>
-        Pembayaran
+      <NavLink href="/profile/offers" Icon={CreditCard}>
+        My Offers
       </NavLink>
 
-      <NavLink href="/profile/notifications" Icon={Bell}>
-        Notifikasi
+      <NavLink href="/profile/auctions" Icon={Bell}>
+         My Auctions
       </NavLink>
 
       <NavLink href="/profile/settings" Icon={Settings}>
