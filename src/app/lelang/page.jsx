@@ -21,6 +21,7 @@ const PageLelang = () => {
   const [lelangData, setLelangData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [sortFilter, setSortFilter] = useState("default");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { token, loading } = useAuth();
 
   async function init() {

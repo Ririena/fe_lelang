@@ -138,7 +138,7 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
               name="tenggat_waktu"
               value={tenggat_waktu}
               onChange={(e) => setTenggatWaktu(e.target.value)}
-              disabled={status === "tutup"}
+              disabled={status === "ditutup"}
             />
 
             <Label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
@@ -150,7 +150,7 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dibuka">Dibuka</SelectItem>
-                <SelectItem value="tutup">Tutup</SelectItem>
+                <SelectItem value="ditutup">Tutup</SelectItem>
               </SelectContent>
             </Select>
           </div>

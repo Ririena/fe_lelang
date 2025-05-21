@@ -98,7 +98,7 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
       if (onLelangAdded) {
         onLelangAdded();
       }
-      setIsOpen(false)
+      setIsOpen(false);
     } catch (error) {
       toast.custom(() => (
         <ToastCard
@@ -116,12 +116,12 @@ const LelangFormDialog = ({ onLelangAdded, refreshTrigger }) => {
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="orange">Tambah Lelang</Button>
+          <Button variant="orange">Add Auction</Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogTitle>Buka Lelang</DialogTitle>
+          <DialogTitle>Open Auction</DialogTitle>
           <DialogDescription>
-            Buka Lelang untuk keperluan bisnis
+            Open an auction for a selected item. Please fill in the details
           </DialogDescription>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">

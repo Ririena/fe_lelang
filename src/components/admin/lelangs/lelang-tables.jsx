@@ -30,6 +30,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import LelangEditDialog from "./lelang-edit-dialog";
 import LelangDeleteDialog from "./lelang-delete.dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const formatRupiah = (value) => {
   return new Intl.NumberFormat("id-ID", {
@@ -175,7 +176,6 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
     init();
   }, [token, refreshTrigger]);
 
-  // Reset current page if filteredLelangs length changes and current page is out of range
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(1);
@@ -195,11 +195,11 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
               <TableRow>
                 <TableHead>ID Lelang</TableHead>
                 <TableHead>ID Barang</TableHead>
-                <TableHead>ID Pemenang</TableHead>
-                <TableHead>Harga Akhir</TableHead>
-                <TableHead>Berakhir Dalam</TableHead>
+                <TableHead>Winner</TableHead>
+                <TableHead>Final Price</TableHead>
+                <TableHead>Ended In</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Aksi</TableHead>
+                <TableHead>Auction</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -208,35 +208,48 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
                   <TableCell>{data.id_lelang}</TableCell>
                   <TableCell>{data.id_barang}</TableCell>
                   <TableCell>
-                    {data.id_pemenang || "Belum ada pemenang"}
+                    {data.username}({data.id_pemenang || "No Winner Yet"})
                   </TableCell>
                   <TableCell>{formatRupiah(data.harga_akhir)}</TableCell>
                   <TableCell>{formatTanggal(data.tenggat_waktu)}</TableCell>
-                  <TableCell>{data.status}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-2 py-1 rounded-full text-sm font-medium ${
+                        data.status === "dibuka"
+                          ? "bg-orange-500 text-white"
+                          : data.status === "ditutup"
+                          ? "bg-red-600 text-white"
+                          : ""
+                      }`}
+                    >
+                      {data.status}
+                    </span>
+                  </TableCell>
+
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <MoreHorizontal className="size-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                        <DropdownMenuLabel>Action</DropdownMenuLabel>
                         <Separator />
-                        <DropdownMenuItem>Copy Item ID</DropdownMenuItem>
+                        <DropdownMenuItem>Copy Auction ID</DropdownMenuItem>
                         <Separator />
                         <DropdownMenuItem className="cursor-pointer">
-                          Lihat Detail Barang
+                          Auction Detail
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="cursor-pointer"
                           onClick={() => handleEdit(data)}
                         >
-                          Edit Barang
+                          Edit Auction
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="cursor-pointer text-red-600"
                           onClick={() => handleDeleteClick(data.id_lelang)}
                         >
-                          Delete Barang
+                          Delete Auction
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -249,48 +262,50 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
           {/* Pagination Controls */}
         </div>
         <Pagination className="mt-4">
-          <PaginationPrevious
-            onClick={() => {
-              if (currentPage > 1) setCurrentPage(currentPage - 1);
-            }}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </PaginationPrevious>
           <PaginationContent>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(
-                (page) =>
-                  page === 1 ||
-                  page === totalPages ||
-                  (page >= currentPage - 1 && page <= currentPage + 1)
-              )
-              .reduce((acc, page, idx, arr) => {
-                const prevPage = arr[idx - 1];
-                if (idx > 0 && page - prevPage > 1) {
-                  acc.push(<PaginationEllipsis key={`ellipsis-${page}`} />);
-                }
-                acc.push(
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(page)}
-                      aria-current={page === currentPage ? "page" : undefined}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-                return acc;
-              }, [])}
+            <PaginationPrevious
+              onClick={() => {
+                if (currentPage > 1) setCurrentPage(currentPage - 1);
+              }}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </PaginationPrevious>
+            <PaginationContent>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (page) =>
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                )
+                .reduce((acc, page, idx, arr) => {
+                  const prevPage = arr[idx - 1];
+                  if (idx > 0 && page - prevPage > 1) {
+                    acc.push(<PaginationEllipsis key={`ellipsis-${page}`} />);
+                  }
+                  acc.push(
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        aria-current={page === currentPage ? "page" : undefined}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                  return acc;
+                }, [])}
+            </PaginationContent>
+            <PaginationNext
+              onClick={() => {
+                if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+              }}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </PaginationNext>
           </PaginationContent>
-          <PaginationNext
-            onClick={() => {
-              if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-            }}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </PaginationNext>
         </Pagination>
       </main>
 

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useState } from "react";
 import LelangTable from "@/components/admin/lelangs/lelang-tables";
 import LelangFormDialog from "@/components/admin/lelangs/lelang-form-dialog";
@@ -23,19 +23,22 @@ const AdminLelangPage = () => {
         <HeadersInsets />
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-semibold">Data Lelang</h1>
+            <h1 className="text-xl font-semibold">Auction Data</h1>
             <LelangFormDialog
               onLelangAdded={handleLelangAdded}
               refreshTrigger={refreshTrigger}
             />
           </div>
           <Input
-            placeholder="Search Lelang"
+            placeholder="Search Auuction"
             className="w-md mt-4 mb-6"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <LelangTable searchQuery={searchQuery} refreshTrigger={refreshTrigger} />
+          <LelangTable
+            searchQuery={searchQuery}
+            refreshTrigger={refreshTrigger}
+          />
         </main>
       </SidebarInset>
     </SidebarProvider>

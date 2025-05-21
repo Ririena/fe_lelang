@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -22,6 +22,7 @@ import {
   FileText,
   Home,
   LayoutDashboard,
+  LetterText,
   LogOut,
   Settings,
   ShoppingCart,
@@ -113,6 +114,14 @@ export function AdminSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/history">
+                    <LetterText className="h-4 w-4" />
+                    <span>History</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -123,18 +132,18 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/dashboard/calendar">
+                  <Link href="/dashboard/calendar">
                     <Calendar className="h-4 w-4" />
                     <span>Calendar</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/dashboard/settings">
+                  <Link href="/dashboard/settings">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

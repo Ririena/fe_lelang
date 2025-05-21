@@ -28,12 +28,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import ItemEditDialog from "./item-edit-dialog";
 import { toast } from "sonner";
 import { ToastCard } from "@/components/ui/toast-card";
-
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -42,7 +41,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
+import { DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -58,6 +57,8 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -111,9 +112,8 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   );
 
   useEffect(() => {
-  setCurrentPage(1);
-}, [searchQuery, filterBy, itemsPerPage]);
-
+    setCurrentPage(1);
+  }, [searchQuery, filterBy, itemsPerPage]);
 
   const handleDelete = async (id) => {
     try {
@@ -182,19 +182,18 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
     return <div>Loading...</div>;
   }
 
-
   return (
     <main className="mt-12">
       <div className="rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID Barang</TableHead>
-              <TableHead>Nama Barang</TableHead>
-              <TableHead>Harga Awal</TableHead>
-              <TableHead>Deskripsi</TableHead>
-              <TableHead>Gambar</TableHead>
-              <TableHead>Aksi</TableHead>
+              <TableHead>Items ID</TableHead>
+              <TableHead>Items Name</TableHead>
+              <TableHead>Starting Price</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Image</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -207,9 +206,13 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                 <TableCell>{data.deskripsi}</TableCell>
                 <TableCell>
                   <img
+                    onClick={() => {
+                      setSelectedImage(data.gambar);
+                      setIsDialogOpen(true);
+                    }}
                     src={data.gambar}
                     alt={data.nama_barang}
-                    className="w-16 h-16 object-cover rounded-md"
+                    className="w-16 h-16 object-cover rounded-md cursor-pointer hover:opacity-80"
                   />
                 </TableCell>
                 <TableCell>
@@ -218,7 +221,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                       <MoreHorizontal className="size-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <DropdownMenuLabel>Action</DropdownMenuLabel>
                       <Separator />
                       <DropdownMenuItem>Copy Item ID</DropdownMenuItem>
                       <Separator />
@@ -231,7 +234,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                           setEditDialogOpen(true);
                         }}
                       >
-                        Edit Barang
+                        Edit Items
                       </DropdownMenuItem>
 
                       <DropdownMenuItem
@@ -242,7 +245,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
                           setOpenDialog(true);
                         }}
                       >
-                        Delete Barang
+                        Delete Items
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -294,7 +297,9 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                className={
+                  currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                }
               />
             </PaginationItem>
 
@@ -311,9 +316,13 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
                 className={
-                  currentPage === totalPages ? "pointer-events-none opacity-50" : ""
+                  currentPage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
                 }
               />
             </PaginationItem>
@@ -342,6 +351,12 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
           </Select>
         </div>
       </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogTitle className="hidden"> asdasd</DialogTitle>
+          <img src={selectedImage ?? ""} alt="Full" className="w-full h-auto" />
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
