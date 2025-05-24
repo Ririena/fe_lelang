@@ -13,6 +13,7 @@ const ProfilePage = () => {
   const [data, setData] = useState("");
   const [offers, setOffers] = useState([]);
   const [myBids, setMyBids] = useState([]);
+  const [myContact, setMyContact] = useState([]);
 
   const { token, loading } = useAuth();
 
@@ -67,11 +68,29 @@ const ProfilePage = () => {
     }
   };
 
+  const fetchContact = async () => {
+    try {
+      const res = await axios.get("http://localhost:3001/v1/my-contact", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!loading && res.data?.data) {
+        setMyContact(res.data.data);
+      }
+    } catch (error) {
+      console.error("failed to fetch contact:", error);
+    }
+  };
+
   useEffect(() => {
     if (!loading && token) {
       fetchDataUser();
       fetchOffers();
       fetchBids();
+      fetchContact()
     }
   }, [loading, token]);
 

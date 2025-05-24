@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Bell, CreditCard, Settings, User } from "lucide-react";
+import { Bell, CreditCard, Settings, User, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -38,7 +38,9 @@ export default function ProfileNavigation() {
       <NavLink href="/profile" Icon={User}>
         Profile
       </NavLink>
-
+      <NavLink href="/profile/contacts" Icon={Mail}>
+        Contact Mail
+      </NavLink>
       <NavLink href="/profile/bids" Icon={Bell}>
         My Offers
       </NavLink>

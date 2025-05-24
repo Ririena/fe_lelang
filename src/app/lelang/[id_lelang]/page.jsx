@@ -53,9 +53,11 @@ const MyPage = () => {
   const { id_lelang } = useParams();
   const [detailData, setDetailData] = useState("");
   const [detailDataBarang, setDetailDataBarang] = useState("");
-  const { token, loading } = useAuth();
+  const { token, loading, user } = useAuth();
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState("");
+  const [profile, setProfile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -183,6 +185,8 @@ const MyPage = () => {
       return alert("Masukkan harga penawaran yang valid.");
     }
 
+    setIsSubmitting(true);
+
     try {
       const res = await axios.post(
         `http://localhost:3001/auctions/${id_lelang}`,
@@ -199,11 +203,19 @@ const MyPage = () => {
         }
       );
 
-      alert("Penawaran Berhasil");
+      toast.custom(() => (
+        <ToastCard
+          title="Berhasil"
+          variant="success"
+          description="Penawaran berhasil dikirim"
+        />
+      ));
       setHargaPenawaran("");
       await init();
     } catch (error) {
       console.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -213,24 +225,28 @@ const MyPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
 
     try {
-      const res = await fetch("/v1/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await axios.post(
+        "http://localhost:3001/v1/contact",
+        {
+          title: formData.title,
+          description: formData.description,
+          id_user: user.id,
+          id_lelang: detailData.id_lelang,
         },
-        body: JSON.stringify(formData),
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const data = await res.json();
+ 
 
-      if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
+      
 
-      setMessage("Your message has been sent successfully!");
       toast.custom(() => (
         <ToastCard
           title="Berhasil"
@@ -404,9 +420,12 @@ const MyPage = () => {
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={handlePenawaran}
+                                  disabled={isSubmitting}
                                   className="bg-orange-600 hover:bg-orange-700 text-white"
                                 >
-                                  Yes, Place The Bid
+                                  {isSubmitting
+                                    ? "Processing..."
+                                    : "Yes, Plce The bid"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -473,29 +492,44 @@ const MyPage = () => {
                       </DialogHeader>
                       <Separator />
 
-                      <div className="mt-2 grid-cols-1">
-                        <Label className="mt-2">Title</Label>
-                        <Input
-                          type="text"
-                          placeholder="Title"
-                          className="mt-4"
-                        />
-                        <Label className="mt-2">Description</Label>
-                        <Textarea
-                          type="text"
-                          placeholder="Title"
-                          className="mt-4"
-                        />
-                        <Label className="mt-2">Title</Label>
-                        <Input
-                          type="text"
-                          placeholder="Title"
-                          className="mt-4"
-                        />
-                        <Button variant="orange" className="mt-4 w-full">
-                          Submit Contact
+                      <form
+                        onSubmit={handleSubmit}
+                        className="mt-2 grid-cols-1"
+                      >
+                        <div className="mt-2">
+                          <Label htmlFor="title" className="mt-2">
+                            Judul Pesan
+                          </Label>
+                          <Input
+                            id="title"
+                            placeholder="Judul pesan"
+                            value={formData.title}
+                            onChange={handleChange}
+                            required
+                            className="mt-2"
+                          />
+                        </div>
+                        <div className="mt-2">
+                          <Label htmlFor="description" className="mt-2">
+                            Isi Pesan
+                          </Label>
+                          <Textarea
+                            className="mt-2"
+                            id="description"
+                            placeholder="Tulis pesanmu..."
+                            value={formData.description}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                        <Button
+                          type="submit"
+                          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? "Mengirim..." : "Kirim Pesan"}
                         </Button>
-                      </div>
+                      </form>
                     </DialogContent>
                   </Dialog>
                 </CardContent>
@@ -509,39 +543,37 @@ const MyPage = () => {
                   {detailData.riwayat_penawaran &&
                   detailData.riwayat_penawaran.length > 0 ? (
                     detailData.riwayat_penawaran.map((item, index) => (
-                      <>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3" key={index}>
-                            <Avatar className="h-8 w-8">
-                              <AvatarFallback className="text-xs bg-orange-100 text-orange-800">
-                                {item.username
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-sm">
-                                {item.username}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {/* {bid.time} */}
-                              </p>
-                            </div>
-                            <Badge className="bg-orange-100 text-orange-600 text-xs">
-                              Test
-                            </Badge>
-                            <p className="font-bold text-orange-700">
-                              {item.harga_penawaran.toLocaleString("id-ID")}
+                      <div className="space-y-3" key={index}>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="text-xs bg-orange-100 text-orange-800">
+                              {item.username
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-sm">
+                              {item.username}
                             </p>
-                            {/* {bid.isHighest && (
+                            <p className="text-xs text-muted-foreground">
+                              {/* {bid.time} */}
+                            </p>
+                          </div>
+                          <Badge className="bg-orange-100 text-orange-600 text-xs">
+                            Test
+                          </Badge>
+                          <p className="font-bold text-orange-700">
+                            {item.harga_penawaran.toLocaleString("id-ID")}
+                          </p>
+                          {/* {bid.isHighest && (
                               <Badge className="bg-orange-600 text-white text-[10px] h-5">
                                 Highest
                               </Badge>
                             )} */}
-                          </div>
                         </div>
-                      </>
+                      </div>
                     ))
                   ) : (
                     <>

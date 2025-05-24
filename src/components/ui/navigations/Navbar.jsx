@@ -31,7 +31,7 @@ const Navbar = () => {
             </Link>
             <nav className="hidden md:flex gap-6">
               <Link
-                href="#"
+                href="/"
                 className="text-sm font-medium hover:text-orange-500 transition-colors"
               >
                 Home
@@ -47,12 +47,6 @@ const Navbar = () => {
                 className="text-sm font-medium hover:text-orange-500 transition-colors"
               >
                 Categories
-              </Link>
-              <Link
-                href="#"
-                className="text-sm font-medium hover:text-orange-500 transition-colors"
-              >
-                How It Works
               </Link>
               <Link
                 href="#"
