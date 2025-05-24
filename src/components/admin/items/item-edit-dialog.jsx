@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import {
   Dialog,
   DialogContent,
@@ -14,16 +14,25 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToastCard } from "@/components/ui/toast-card";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
   const [nama_barang, setNamaBarang] = useState("");
-  const [gambar, setGambar] = useState(""); 
+  const [gambar, setGambar] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
   const [harga_awal, setHargaAwal] = useState("");
   const [file, setFile] = useState(null);
-
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   useEffect(() => {
     if (item) {
       setNamaBarang(item.nama_barang);
@@ -34,6 +43,25 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
     }
   }, [item]);
 
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:3001/v2/categories", {
+          headers: { "Content-Type": "application/json" },
+        });
+        setCategories(res.data.categories || []);
+      } catch {
+        toast.custom(() => (
+          <ToastCard
+            title="Gagal"
+            variant="destructive"
+            description="Terjadi kesalahan saat mengambil kategori"
+          />
+        ));
+      }
+    };
+    getCategories();
+  }, []);
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -47,56 +75,59 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
     }
   };
 
- const handleSubmit = async () => {
-  setLoading(true);
+  const handleSubmit = async () => {
+    setLoading(true);
 
-  try {
-    const updatedData = {
-      nama_barang,
-      harga_awal: Number(harga_awal),
-      deskripsi,
-      gambar,
-    };
+    try {
+      const updatedData = {
+        nama_barang,
+        harga_awal: Number(harga_awal),
+        deskripsi,
+        gambar,
+        id_kategori: selectedCategory,
+      };
 
-    await axios.put(
-      `http://localhost:3001/v2/items/${item.id_barang}`,
-      updatedData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `bearer ${token}`,
-        },
+      await axios.put(
+        `http://localhost:3001/v2/items/${item.id_barang}`,
+        updatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `bearer ${token}`,
+          },
+        }
+      );
+
+      setLoading(false);
+      onOpenChange(false);
+
+      if (onUpdated) {
+        onUpdated({ ...item, ...updatedData });
       }
-    );
 
-    setLoading(false);
-    onOpenChange(false);
+      toast.custom(() => (
+        <ToastCard
+          title="Berhasil"
+          variant="success"
+          description="Item berhasil diperbarui"
+        />
+      ));
 
-    if (onUpdated) {
-      onUpdated({ ...item, ...updatedData });
+      setSelectedCategory(null);
+    } catch (error) {
+      setLoading(false);
+
+      toast.custom(() => (
+        <ToastCard
+          title="Gagal"
+          variant="destructive"
+          description={
+            error?.response?.data?.message || "Gagal memperbarui item"
+          }
+        />
+      ));
     }
-
-    toast.custom(() => (
-      <ToastCard
-        title="Berhasil"
-        variant="success"
-        description="Item berhasil diperbarui"
-      />
-    ));
-  } catch (error) {
-    setLoading(false);
-
-    toast.custom(() => (
-      <ToastCard
-        title="Gagal"
-        variant="destructive"
-        description={error?.response?.data?.message || "Gagal memperbarui item"}
-      />
-    ));
-  }
-};
-
-
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,6 +170,35 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
           </div>
           <div>
             <Label className="block text-sm font-medium text-gray-700 mb-1">
+              Kategori
+            </Label>
+            <Select
+              className="w-full"
+              onValueChange={(value) => setSelectedCategory(value)}
+              value={selectedCategory}
+              required
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Pilih Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories
+                    .filter((cat) => cat.id_kategori)
+                    .map((cat) => (
+                      <SelectItem
+                        key={cat.id_kategori}
+                        value={String(cat.id_kategori)}
+                      >
+                        {cat.nama_kategori || "Kategori tanpa nama"}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-1">
               Gambar
             </Label>
             {gambar && (
@@ -161,4 +221,4 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
   );
 };
 
-export default ItemEditDialog
+export default ItemEditDialog;

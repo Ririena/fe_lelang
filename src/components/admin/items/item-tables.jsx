@@ -60,6 +60,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -70,6 +71,8 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
       )
     );
   };
+
+
 
   const filteredItems = useMemo(() => {
     let filtered = [...dataItems];
