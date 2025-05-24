@@ -24,6 +24,8 @@ import {
   LayoutDashboard,
   LetterText,
   LogOut,
+  Mail,
+  Paperclip,
   Settings,
   ShoppingCart,
   Users,
@@ -122,6 +124,14 @@ export function AdminSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/contacts">
+                    <Mail className="h-4 w-4" />
+                    <span>Contacts</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -140,7 +150,7 @@ export function AdminSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/dashboard/settings">
+                  <Link href="/admin/settings">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
