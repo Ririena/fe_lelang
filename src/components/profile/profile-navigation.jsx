@@ -39,12 +39,12 @@ export default function ProfileNavigation() {
         Profile
       </NavLink>
 
-      <NavLink href="/profile/offers" Icon={CreditCard}>
+      <NavLink href="/profile/bids" Icon={Bell}>
         My Offers
       </NavLink>
 
-      <NavLink href="/profile/auctions" Icon={Bell}>
-         My Auctions
+      <NavLink href="/profile/auctions" Icon={CreditCard}>
+        My Auctions
       </NavLink>
 
       <NavLink href="/profile/settings" Icon={Settings}>

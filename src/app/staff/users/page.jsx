@@ -33,9 +33,9 @@ const StaffPageUsers = () => {
         <main className="flex-1 p-6">
           <div className="flex justify-between">
             <h1 className="text-xl font-semibold">Data Users</h1>
-            <UserFormDialog
+            {/* <UserFormDialog
               onUserAdded={() => setTrigger((prev) => prev + 1)}
-            />
+            /> */}
           </div>
           <div className="flex gap-4 mt-6">
             <Input

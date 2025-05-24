@@ -84,9 +84,8 @@ const ProfilePage = () => {
         </div>
 
         {/* Tabs Content */}
-        <div className="col-span-12">
+        {/* <div className="col-span-12">
           <Tabs defaultValue="profile">
-            {/* Responsive Tab List */}
             <TabsList className="flex flex-wrap gap-2 justify-center mb-4">
               <TabsTrigger
                 value="profile"
@@ -120,7 +119,7 @@ const ProfilePage = () => {
               </TabsContent>
             </div>
           </Tabs>
-        </div>
+        </div> */}
       </div>
     </main>
   );
