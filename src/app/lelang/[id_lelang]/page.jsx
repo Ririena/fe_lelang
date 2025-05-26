@@ -58,10 +58,14 @@ const MyPage = () => {
   const [timeLeft, setTimeLeft] = useState("");
   const [profile, setProfile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
   });
+
+  const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   async function init() {
     try {
@@ -212,6 +216,7 @@ const MyPage = () => {
       ));
       setHargaPenawaran("");
       await init();
+      setOpen(false);
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -243,10 +248,6 @@ const MyPage = () => {
         }
       );
 
- 
-
-      
-
       toast.custom(() => (
         <ToastCard
           title="Berhasil"
@@ -255,6 +256,7 @@ const MyPage = () => {
         />
       ));
       setFormData({ title: "", description: "" });
+      setIsContactOpen(false);
     } catch (err) {
       toast.custom(() => (
         <ToastCard
@@ -267,7 +269,7 @@ const MyPage = () => {
   };
 
   const word = detailData.staff?.username || "Unknown Seller";
-  const firstTwoLetters = word.slice(0, 2)
+  const firstTwoLetters = word.slice(0, 2);
 
   return (
     <>
@@ -276,7 +278,7 @@ const MyPage = () => {
           <div className="mb-12">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                   {detailDataBarang.nama_barang}
                 </h1>
                 {/* <p className="text-lg text-muted-foreground">
@@ -380,8 +382,6 @@ const MyPage = () => {
 
                     <Separator className="bg-orange-100" />
 
-                    {/* Reserve Price */}
-
                     {/* Bid Form */}
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
@@ -389,7 +389,12 @@ const MyPage = () => {
                           Place Your Bid
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          Min. increment: $50
+                          Min. increment:{" "}
+                          {detailData?.harga_akhir
+                            ? detailData.harga_akhir.toLocaleString("id-ID")
+                            : detailDataBarang?.harga_awal?.toLocaleString(
+                                "id-ID"
+                              )}
                         </p>
                       </div>
                       <div className="space-y-3">
@@ -402,7 +407,7 @@ const MyPage = () => {
                             onChange={(e) => setHargaPenawaran(e.target.value)}
                           />
 
-                          <AlertDialog>
+                          <AlertDialog open={open} onOpenChange={setOpen}>
                             <AlertDialogTrigger asChild>
                               <Button className="mt-4 w-full h-12 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-lg shadow-lg">
                                 Place Bid
@@ -463,7 +468,7 @@ const MyPage = () => {
                     </Avatar>
                     <div>
                       <p className="font-semibold text-gray-900">
-                    {detailData.staff.username || "Unknown Seller"}
+                        {detailData.staff.username || "Unknown Seller"}
                       </p>
                       <div className="flex items-center gap-1">
                         <div className="flex text-orange-500">
@@ -476,7 +481,7 @@ const MyPage = () => {
                     </div>
                   </div>
 
-                  <Dialog>
+                  <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -525,12 +530,8 @@ const MyPage = () => {
                             required
                           />
                         </div>
-                        <Button
-                          type="submit"
-                          className="w-full bg-orange-600 hover:bg-orange-700 text-white"
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? "Mengirim..." : "Kirim Pesan"}
+                        <Button type="submit" disabled={isContactSubmitting}>
+                          {isContactSubmitting ? "Sending..." : "Send Message"}
                         </Button>
                       </form>
                     </DialogContent>

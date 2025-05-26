@@ -151,35 +151,7 @@ const ContactPage = () => {
                       </div>
                     </div>
 
-                    <div>
-                      <Label htmlFor="category">Category *</Label>
-                      <Select
-                        value={formData.category}
-                        onValueChange={(value) =>
-                          handleInputChange("category", value)
-                        }
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="general">
-                            General Support
-                          </SelectItem>
-                          <SelectItem value="billing">
-                            Billing & Payments
-                          </SelectItem>
-                          <SelectItem value="shipping">
-                            Shipping & Returns
-                          </SelectItem>
-                          <SelectItem value="safety">Trust & Safety</SelectItem>
-                          <SelectItem value="seller">Seller Support</SelectItem>
-                          <SelectItem value="technical">
-                            Technical Issues
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  
 
                     <div>
                       <Label htmlFor="subject">Subject *</Label>
@@ -195,20 +167,6 @@ const ContactPage = () => {
                       />
                     </div>
 
-                    <div>
-                      <Label htmlFor="orderNumber">
-                        Order/Auction Number (if applicable)
-                      </Label>
-                      <Input
-                        id="orderNumber"
-                        value={formData.orderNumber}
-                        onChange={(e) =>
-                          handleInputChange("orderNumber", e.target.value)
-                        }
-                        className="mt-1"
-                        placeholder="e.g., AUC-123456"
-                      />
-                    </div>
 
                     <div>
                       <Label htmlFor="message">Message *</Label>

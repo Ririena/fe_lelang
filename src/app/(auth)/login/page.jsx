@@ -11,7 +11,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { ServerCrash } from "lucide-react";
 import { ToastCard } from "@/components/ui/toast-card";
-import {CheckCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -22,6 +22,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
 
     try {
@@ -79,7 +80,7 @@ const LoginPage = () => {
               Tawarin.com
             </h1>
             <h2 className="text-2xl text-black font-semibold">
-              Login in to your account
+              Login to your account
             </h2>
             <p className="text-lg font-light">
               Or{" "}
@@ -106,10 +107,12 @@ const LoginPage = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter Your Username"
                   icon={<User size={18} />}
+                  value={username}
+                  required
                 />
                 <div className="flex justify-between mt-2">
                   <Label className="text-md font-semibold">Password</Label>
-                  <p className="text-orange-500 font-thin text-md">
+                  <p className="text-orange-500 font-thin text-md cursor-pointer select-none">
                     Forgot Your Password?
                   </p>
                 </div>
@@ -119,14 +122,17 @@ const LoginPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   name="password"
                   icon={<Eye size={18} />}
+                  value={password}
+                  required
                 />
 
                 <Button
+                  type="submit"
                   variant="orange"
                   className="mt-6 w-full"
                   disabled={loading}
                 >
-                  {loading ? "Proccess" : "Sign In"}
+                  {loading ? "Processing..." : "Sign In"}
                 </Button>
               </form>
             </CardContent>

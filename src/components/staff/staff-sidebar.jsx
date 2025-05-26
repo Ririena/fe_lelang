@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -13,23 +14,45 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/AuthContext";
 import {
   BarChart3,
   Calendar,
-  LetterText,
-  Mail,
   CreditCard,
   FileText,
   Home,
   LayoutDashboard,
+  LetterText,
   LogOut,
+  Mail,
+  Paperclip,
   Settings,
   ShoppingCart,
   Users,
 } from "lucide-react";
-
 import Link from "next/link";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import { Alert } from "../ui/alert";
 export function StaffSidebar() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
@@ -119,18 +142,18 @@ export function StaffSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/dashboard/calendar">
+                  <Link href="/dashboard/calendar">
                     <Calendar className="h-4 w-4" />
                     <span>Calendar</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/dashboard/settings">
+                  <Link href="/staff/settings">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -148,14 +171,36 @@ export function StaffSidebar() {
               <AvatarFallback>AD</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-muted-foreground">admin@example.com</p>
+              <p className="text-sm font-medium">{user.username}</p>
+              <p className="text-xs text-muted-foreground">Staff</p>
             </div>
           </div>
-          <button className="rounded-full p-1 hover:bg-muted">
-            <LogOut className="h-4 w-4" />
-            <span className="sr-only">Log out</span>
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button className="rounded-full p-1 hover:bg-muted">
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Log out</span>
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Keluar dari akun?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Apakah kamu yakin ingin keluar? Kamu harus login kembali untuk
+                  mengakses akunmu.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 hover:bg-red-700 hover:cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  Ya, Keluar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </SidebarFooter>
       <SidebarRail />
