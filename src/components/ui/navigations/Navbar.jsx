@@ -100,8 +100,8 @@ const Navbar = () => {
                 </button>
               </SheetTrigger>
               <SheetContent
-                side="top" // bisa juga 'left' atau 'right' tergantung style kamu
-                className="p-8 w-full h-full max-w-none bg-white" // full screen
+                side="top" 
+                className="p-8 w-full h-full max-w-none bg-white" 
               >
                 <SheetHeader className="flex justify-between items-center mb-8">
                   <SheetTitle className="text-orange-500 text-3xl font-semibold">
@@ -125,13 +125,9 @@ const Navbar = () => {
                       Categories
                     </Link>
                   </SheetClose>
+          
                   <SheetClose asChild>
-                    <Link className="hover:text-orange-500" href="#">
-                      How It Works
-                    </Link>
-                  </SheetClose>
-                  <SheetClose asChild>
-                    <Link href="#">Contact</Link>
+                    <Link href="/contact">Contact</Link>
                   </SheetClose>
                 </nav>
 

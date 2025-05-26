@@ -206,9 +206,9 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
               {paginatedLelangs.map((data) => (
                 <TableRow key={data.id_lelang}>
                   <TableCell>{data.id_lelang}</TableCell>
-                  <TableCell>{data.id_barang}</TableCell>
+                  <TableCell>{data.id_barang} ({data.nama_barang || "No Item Yet"})</TableCell>
                   <TableCell>
-                    {data.username}({data.id_pemenang || "No Winner Yet"})
+                    {data.username} ({data.id_pemenang || "No Winner Yet"})
                   </TableCell>
                   <TableCell>{formatRupiah(data.harga_akhir)}</TableCell>
                   <TableCell>{formatTanggal(data.tenggat_waktu)}</TableCell>

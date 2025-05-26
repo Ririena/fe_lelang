@@ -21,7 +21,9 @@ const PageLelang = () => {
   const [lelangData, setLelangData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [sortFilter, setSortFilter] = useState("default");
+  const [categoriesData, setCategoriesData] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const { token, loading } = useAuth();
 
   async function init() {
@@ -31,6 +33,8 @@ const PageLelang = () => {
           "Content-Type": "application/json",
         },
       });
+
+      console.log(res.data);
       if (!loading) {
         setLelangData(res.data.data);
       }
@@ -40,16 +44,40 @@ const PageLelang = () => {
     }
   }
 
+  async function getCategory() {
+    try {
+      const res = await axios.get("http://localhost:3001/v2/categories", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.table(res.data);
+      console.log(res.data);
+      setCategoriesData(res.data.categories);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error.message);
+    }
+  }
+
   useEffect(() => {
     if (!loading) {
       init();
+      getCategory();
     }
   }, [loading]);
 
   const filteredData = lelangData
-    .filter((item) =>
-      item.nama_barang.toLowerCase().includes(searchText.toLowerCase())
-    )
+    .filter((item) => {
+      const matchesSearch = item.nama_barang
+        .toLowerCase()
+        .includes(searchText.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" ||
+        !selectedCategory ||
+        item.id_kategori === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
     .sort((a, b) => {
       switch (sortFilter) {
         case "price-low":
@@ -69,26 +97,45 @@ const PageLelang = () => {
       }
     });
 
-  const categories = [
-    { name: "Semua Kategori", count: 1245 },
-    { name: "Elektronik", count: 525 },
-    { name: "Buku", count: 95 },
-    { name: "Perhiasan", count: 34 },
-    { name: "Kendaraan", count: 324 },
-  ];
-
   return (
     <>
       <main className="mt-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8">
           {/* Categories Sidebar */}
-          <div className="border rounded-md p-4">
+
+               <div className="block md:hidden">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Cari Barang Lelang"
+                    className="pl-8"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </div>
+
+          <div className="hidden md:block border rounded-md p-4">
             <h3 className="font-bold mb-3">Kategori</h3>
             <ul className="space-y-2">
-              {categories.map((category, index) => (
-                <li key={index} className="flex justify-between text-sm">
-                  <span>{category.name}</span>
-                  <span className="text-gray-500">{category.count}</span>
+              <li
+                className={`cursor-pointer text-sm ${
+                  selectedCategory === null ? "font-semibold" : ""
+                }`}
+                onClick={() => setSelectedCategory(null)}
+              >
+                Semua Kategori
+              </li>
+              {categoriesData.map((category) => (
+                <li
+                  key={category.id_kategori}
+                  className={`cursor-pointer text-sm ${
+                    selectedCategory === category.id_kategori
+                      ? "font-semibold text-orange-500"
+                      : ""
+                  }`}
+                  onClick={() => setSelectedCategory(category.id_kategori)}
+                >
+                  {category.nama_kategori}
                 </li>
               ))}
             </ul>
@@ -96,15 +143,38 @@ const PageLelang = () => {
 
           <div className="md:col-span-3 space-y-4">
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                  type="search"
-                  placeholder="Cari Barang Lelang"
-                  className="pl-8"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
+              <div className="relative flex-1 ">
+                <div className="hidden md:block">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Cari Barang Lelang"
+                    className="pl-8"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </div>
+                <div className="block md:hidden">
+                  <Select
+                    onValueChange={(value) => setSelectedCategory(value)}
+                    value={selectedCategory ?? ""}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih Kategori" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua Kategori</SelectItem>
+                      {categoriesData.map((category) => (
+                        <SelectItem
+                          key={category.id_kategori}
+                          value={category.id_kategori}
+                        >
+                          {category.nama_kategori}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <Select
                 value={sortFilter}

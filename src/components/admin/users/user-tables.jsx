@@ -39,11 +39,16 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy }) {
+export default function UserTables({
+  onUserAdded,
+  trigger,
+  searchQuery,
+  filterBy,
+}) {
   const [dataUser, setDataUser] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const { token, loading } = useAuth();
+  const { token, loading, user } = useAuth();
 
   // Filter and sort users based on search query and filter selection
   const filteredUsers = useMemo(() => {
@@ -54,44 +59,44 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((user) => {
         // Add null checks for each property
-        const username = user?.username?.toLowerCase() || '';
-        const id = user?.id_user?.toString() || '';
-        const role = user?.role?.toLowerCase() || '';
-        
-        return username.includes(query) ||
-               id.includes(query) ||
-               role.includes(query);
+        const username = user?.username?.toLowerCase() || "";
+        const id = user?.id_user?.toString() || "";
+        const role = user?.role?.toLowerCase() || "";
+
+        return (
+          username.includes(query) || id.includes(query) || role.includes(query)
+        );
       });
     }
 
     // Apply role filter and sorting
     switch (filterBy) {
-      case 'admin':
-        filtered = filtered.filter(user => 
-          user?.role?.toLowerCase() === 'admin'
+      case "admin":
+        filtered = filtered.filter(
+          (user) => user?.role?.toLowerCase() === "admin"
         );
         break;
-      case 'masyarakat':
-        filtered = filtered.filter(user => 
-          user?.role?.toLowerCase() === 'masyarakat'
+      case "masyarakat":
+        filtered = filtered.filter(
+          (user) => user?.role?.toLowerCase() === "masyarakat"
         );
         break;
-      case 'petugas':
-        filtered = filtered.filter(user => 
-          user?.role?.toLowerCase() === 'petugas'
+      case "petugas":
+        filtered = filtered.filter(
+          (user) => user?.role?.toLowerCase() === "petugas"
         );
         break;
-      case 'name_asc':
+      case "name_asc":
         filtered.sort((a, b) => {
-          const nameA = a?.username?.toLowerCase() || '';
-          const nameB = b?.username?.toLowerCase() || '';
+          const nameA = a?.username?.toLowerCase() || "";
+          const nameB = b?.username?.toLowerCase() || "";
           return nameA.localeCompare(nameB);
         });
         break;
-      case 'name_desc':
+      case "name_desc":
         filtered.sort((a, b) => {
-          const nameA = a?.username?.toLowerCase() || '';
-          const nameB = b?.username?.toLowerCase() || '';
+          const nameA = a?.username?.toLowerCase() || "";
+          const nameB = b?.username?.toLowerCase() || "";
           return nameB.localeCompare(nameA);
         });
         break;
@@ -142,7 +147,7 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
       init();
     }
   }, [token, loading, trigger]);
-  
+
   useEffect(() => {
     if (onUserAdded) {
       init();
@@ -168,12 +173,37 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
             </TableHeader>
 
             <TableBody>
-              {filteredUsers.map((user) => {
+              {filteredUsers.map((userItem) => {
+                // userItem adalah data user di baris tabel
+
+                // Tentukan apakah user login berhak delete userItem
+                const canDelete = (() => {
+                  if (!user || !user.role) return false;
+
+                  const roleLogin = user.role.toLowerCase();
+                  const roleTarget = userItem.role.toLowerCase();
+
+                  if (roleLogin === "admin") {
+                    // admin bisa delete petugas dan masyarakat saja
+                    return (
+                      roleTarget === "petugas" || roleTarget === "masyarakat"
+                    );
+                  } else if (roleLogin === "petugas") {
+                    // petugas hanya bisa delete masyarakat
+                    return roleTarget === "masyarakat";
+                  } else {
+                    // masyarakat tidak bisa delete siapa pun
+                    return false;
+                  }
+                })();
+
                 return (
-                  <TableRow key={user.id_user}>
-                    <TableCell>{user.id_user}</TableCell>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell className="capitalize">{user.role}</TableCell>
+                  <TableRow key={userItem.id_user}>
+                    <TableCell>{userItem.id_user}</TableCell>
+                    <TableCell>{userItem.username}</TableCell>
+                    <TableCell className="capitalize">
+                      {userItem.role}
+                    </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <span className="sr-only">Open menu</span>
@@ -193,16 +223,19 @@ export default function UserTables({ onUserAdded, trigger, searchQuery, filterBy
                           <DropdownMenuItem className="cursor-pointer">
                             Edit User
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={(e) => {
-                              e.preventDefault();
-                              setSelectedUser(user.id_user);
-                              setOpenDialog(true);
-                            }}
-                            className="cursor-pointer"
-                          >
-                            Delete
-                          </DropdownMenuItem>
+                          {/* Tampilkan Delete hanya jika bisa delete */}
+                          {canDelete && (
+                            <DropdownMenuItem
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                setSelectedUser(userItem.id_user);
+                                setOpenDialog(true);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

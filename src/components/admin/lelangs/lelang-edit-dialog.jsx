@@ -57,70 +57,78 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
     status === lelang?.status &&
     tenggat_waktu === formattedOriginalTenggatWaktu;
 
-  // Validasi input
   const isInvalid = !status || (status === "dibuka" && !tenggat_waktu);
 
-  // Validasi conflict: tidak boleh ubah tenggat_waktu saat status = "tutup"
   const isConflict =
     status === "tutup" && tenggat_waktu !== formattedOriginalTenggatWaktu;
 
- const handleSubmit = async () => {
-  setLoading(true);
-  try {
-    const updatedData = {};
-
-    if (status !== lelang?.status) {
-      updatedData.status = status;
+  const handleSubmit = async () => {
+    if (lelang.status === "ditutup" || lelang.id_pemenang) {
+      toast.custom(() => (
+        <ToastCard
+          title="Tidak Diizinkan"
+          description="Lelang sudah ditutup atau sudah memiliki pemenang, tidak bisa diubah."
+          variant="destructive"
+        />
+      ));
+      return;
     }
+    setLoading(true);
+    try {
+      const updatedData = {};
 
-    if (
-      status === "dibuka" &&
-      tenggat_waktu &&
-      tenggat_waktu !== formattedOriginalTenggatWaktu
-    ) {
-      const localDate = new Date(tenggat_waktu);
-      const utcDate = new Date(
-        localDate.getTime() + localDate.getTimezoneOffset() * 60000
-      );
-      updatedData.tenggat_waktu = utcDate.toISOString();
-    }
-
-    await axios.put(
-      `http://localhost:3001/auctions/${lelang.id_lelang}`,
-      updatedData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      if (status !== lelang?.status) {
+        updatedData.status = status;
       }
-    );
 
-    toast.custom(() => (
-      <ToastCard
-        title="Berhasil"
-        description="Lelang berhasil diperbarui"
-        type="success"
-      />
-    ));
+      if (
+        status === "dibuka" &&
+        tenggat_waktu &&
+        tenggat_waktu !== formattedOriginalTenggatWaktu
+      ) {
+        const localDate = new Date(tenggat_waktu);
+        const utcDate = new Date(
+          localDate.getTime() + localDate.getTimezoneOffset() * 60000
+        );
+        updatedData.tenggat_waktu = utcDate.toISOString();
+      }
 
-    setLoading(false);
-    onOpenChange(false);
+      await axios.put(
+        `http://localhost:3001/auctions/${lelang.id_lelang}`,
+        updatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (onUpdated) {
-      onUpdated({ ...lelang, ...updatedData });
+      toast.custom(() => (
+        <ToastCard
+          title="Berhasil"
+          description="Lelang berhasil diperbarui"
+          type="success"
+        />
+      ));
+
+      setLoading(false);
+      onOpenChange(false);
+
+      if (onUpdated) {
+        onUpdated({ ...lelang, ...updatedData });
+      }
+    } catch (error) {
+      setLoading(false);
+      toast.custom(() => (
+        <ToastCard
+          title="Gagal"
+          description={`Gagal memperbarui lelang: ${error.message}`}
+          type="error"
+        />
+      ));
     }
-  } catch (error) {
-    setLoading(false);
-    toast.custom(() => (
-      <ToastCard
-        title="Gagal"
-        description={`Gagal memperbarui lelang: ${error.message}`}
-        type="error"
-      />
-    ));
-  }
-};
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

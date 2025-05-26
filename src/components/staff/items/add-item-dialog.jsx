@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { formatNumberWithDots } from "@/lib/formatNum";
 
 export function AddItemDialog({ open, onOpenChange, onItemAdded }) {
   const [formData, setFormData] = useState({
@@ -117,16 +118,19 @@ export function AddItemDialog({ open, onOpenChange, onItemAdded }) {
               <Label htmlFor="price" className="text-right">
                 Price
               </Label>
-              <Input
-                id="price"
-                type="number"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: e.target.value })
-                }
-                className="col-span-3"
-                required
-              />
+          <Input
+  id="price"
+  type="text"
+  inputMode="numeric"
+  value={formatNumberWithDots(formData.price)}
+  onChange={(e) => {
+    const raw = e.target.value.replace(/\D/g, ""); 
+    setFormData({ ...formData, price: raw });     
+  }}
+  className="col-span-3"
+  required
+/>
+
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
@@ -150,4 +154,4 @@ export function AddItemDialog({ open, onOpenChange, onItemAdded }) {
       </DialogContent>
     </Dialog>
   );
-} 
+}

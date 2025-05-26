@@ -266,6 +266,9 @@ const MyPage = () => {
     }
   };
 
+  const word = detailData.staff?.username || "Unknown Seller";
+  const firstTwoLetters = word.slice(0, 2)
+
   return (
     <>
       <main>
@@ -455,19 +458,19 @@ const MyPage = () => {
                     <Avatar className="h-12 w-12">
                       <AvatarImage src="/placeholder.svg?height=48&width=48" />
                       <AvatarFallback className="bg-orange-100 text-orange-800 font-semibold">
-                        LW
+                        {firstTwoLetters.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-semibold text-gray-900">
-                        Luxury Watches Inc.
+                    {detailData.staff.username || "Unknown Seller"}
                       </p>
                       <div className="flex items-center gap-1">
                         <div className="flex text-orange-500">
                           <Star className="fill-orange-500 h-3 w-3" />
                         </div>
                         <span className="text-xs text-muted-foreground ml-1">
-                          (128 reviews)
+                          (52 reviews)
                         </span>
                       </div>
                     </div>

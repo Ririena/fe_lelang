@@ -16,6 +16,8 @@ import {
 import {
   BarChart3,
   Calendar,
+  LetterText,
+  Mail,
   CreditCard,
   FileText,
   Home,
@@ -35,7 +37,7 @@ export function StaffSidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <LayoutDashboard className="h-4 w-4" />
           </div>
-          <div className="font-semibold">Admin Portal</div>
+          <div className="font-semibold">Staff Portal</div>
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -45,7 +47,7 @@ export function StaffSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive>
-                  <Link href="/admin">
+                  <Link href="/staff">
                     <Home className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
@@ -53,7 +55,7 @@ export function StaffSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/admin/analytics">
+                  <Link href="/staff/analytics">
                     <BarChart3 className="h-4 w-4" />
                     <span>Analytics</span>
                   </Link>
@@ -88,6 +90,22 @@ export function StaffSidebar() {
                   <Link href="/staff/lelangs">
                     <FileText className="h-4 w-4" />
                     <span>Auctions</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/staff/history">
+                    <LetterText className="h-4 w-4" />
+                    <span>History</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/staff/contacts">
+                    <Mail className="h-4 w-4" />
+                    <span>Contacts</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -5,12 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
 import { Label } from "@/components/ui/label";
-import {
-  CreditCard,
-  Shield,
-  CheckCircle,
-  Lock,
-} from "lucide-react";
+import { CreditCard, Shield, CheckCircle, Lock } from "lucide-react";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
@@ -36,7 +31,7 @@ const AuctionDetailUser = () => {
   const [detailDataBarang, setDetailDataBarang] = useState("");
   const [isPageLoading, setIsPageLoading] = useState(true);
   const { id_lelang } = useParams();
-  const [paymentMethod, setPaymentMethod] = useState("credit-card");
+  const [paymentMethod, setPaymentMethod] = useState("Dana");
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentComplete, setPaymentComplete] = useState(false);
@@ -45,8 +40,8 @@ const AuctionDetailUser = () => {
   const orderSummary = {
     itemPrice: detailData.harga_akhir,
     shippingCost: 3000,
-    processingFee: Math.round(detailData.harga_akhir * 0.03), // 3% processing fee
-    tax: Math.round((detailData.harga_akhir + 3) * 0.08), // 8% tax
+    processingFee: Math.round(detailData.harga_akhir * 0.03),
+    tax: Math.round((detailData.harga_akhir + 3) * 0.08), 
     get total() {
       return this.itemPrice + this.shippingCost + this.processingFee + this.tax;
     },
@@ -54,7 +49,6 @@ const AuctionDetailUser = () => {
 
   const handlePayment = async () => {
     setIsProcessing(true);
-    // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 3000));
     setIsProcessing(false);
     setPaymentComplete(true);
@@ -128,8 +122,6 @@ const AuctionDetailUser = () => {
       init();
     }
   }, [token, loading]);
-
- 
 
   if (paymentComplete) {
     return (
@@ -209,7 +201,18 @@ const AuctionDetailUser = () => {
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           {/* <span>Seller: {auction.seller.name}</span> */}
                           <span>•</span>
-                          <span>Ended: {detailData.tenggat_waktu}</span>
+                          <span>
+                            Ended:{" "}
+                            {new Date(detailData.tenggat_waktu).toLocaleString(
+                              "id-ID",
+                              {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long", 
+                                day: "numeric",
+                              }
+                            )}
+                          </span>
                         </div>
                         <div className="mt-2">
                           <span className="text-lg font-bold text-orange-600">
@@ -241,116 +244,57 @@ const AuctionDetailUser = () => {
                       className="space-y-4"
                     >
                       <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                        <RadioGroupItem value="credit-card" id="credit-card" />
-                        <Label
-                          htmlFor="credit-card"
-                          className="flex-1 cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
+                        <RadioGroupItem value="Dana" id="Dana" />
+                        <Label htmlFor="Dana" className="flex-1 cursor-pointer">
+                          <div className="flex items-center justify-between w-full">
                             <div>
-                              <div className="font-medium">
-                                Credit or Debit Card
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                Visa, Mastercard, American Express
+                              <div className="font-medium">Dana</div>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Pay with your Dana account
                               </div>
                             </div>
-                            <div className="flex gap-1">
-                              <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center">
-                                VISA
-                              </div>
-                              <div className="w-8 h-5 bg-red-600 rounded text-white text-xs flex items-center justify-center">
-                                MC
-                              </div>
-                              <div className="w-8 h-5 bg-blue-800 rounded text-white text-xs flex items-center justify-center">
-                                AMEX
-                              </div>
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                        <RadioGroupItem value="paypal" id="paypal" />
-                        <Label
-                          htmlFor="paypal"
-                          className="flex-1 cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="font-medium">PayPal</div>
-                              <div className="text-sm text-gray-500">
-                                Pay with your PayPal account
-                              </div>
-                            </div>
-                            <div className="w-16 h-8 bg-blue-600 rounded text-white text-sm flex items-center justify-center font-bold">
-                              PayPal
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg">
-                        <RadioGroupItem value="apple-pay" id="apple-pay" />
-                        <Label
-                          htmlFor="apple-pay"
-                          className="flex-1 cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="font-medium">Apple Pay</div>
-                              <div className="text-sm text-gray-500">
-                                Pay with Touch ID or Face ID
-                              </div>
-                            </div>
-                            <div className="w-16 h-8 bg-black rounded text-white text-sm flex items-center justify-center">
-                              Pay
-                            </div>
+                            <Image
+                              src="/dana.jpg.webp"
+                              height={40}
+                              width={80}
+                              alt="Dana"
+                              className="object-contain ml-4"
+                            />
                           </div>
                         </Label>
                       </div>
                     </RadioGroup>
-
-                    {paymentMethod === "credit-card" && (
-                      <div className="mt-6 space-y-4">
-                        <div className="grid grid-cols-1 gap-4">
-                          <div>
-                            <Label htmlFor="card-number">Card Number</Label>
-                            <Input
-                              id="card-number"
-                              placeholder="1234 5678 9012 3456"
-                              className="mt-1"
+                  </CardContent>
+                  <CardContent>
+                    <RadioGroup
+                      value={paymentMethod}
+                      onValueChange={setPaymentMethod}
+                      className="space-y-4"
+                    >
+                      <div className="flex items-center space-x-3 p-4 border rounded-lg">
+                        <RadioGroupItem value="Gopay" id="Gopay" />
+                        <Label
+                          htmlFor="Gopay"
+                          className="flex-1 cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div>
+                              <div className="font-medium">Gopay</div>
+                              <div className="text-sm text-gray-500 mt-1">
+                                Pay with your Gopay account
+                              </div>
+                            </div>
+                            <Image
+                              src="/gopay.jpg"
+                              height={40}
+                              width={80}
+                              alt="Gopay"
+                              className="object-contain ml-4"
                             />
                           </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <Label htmlFor="expiry">Expiry Date</Label>
-                              <Input
-                                id="expiry"
-                                placeholder="MM/YY"
-                                className="mt-1"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="cvv">CVV</Label>
-                              <Input
-                                id="cvv"
-                                placeholder="123"
-                                className="mt-1"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="card-name">Name on Card</Label>
-                            <Input
-                              id="card-name"
-                              placeholder="John Doe"
-                              className="mt-1"
-                            />
-                          </div>
-                        </div>
+                        </Label>
                       </div>
-                    )}
+                    </RadioGroup>
                   </CardContent>
                 </Card>
 
@@ -362,12 +306,12 @@ const AuctionDetailUser = () => {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="first-name">First Name</Label>
                         <Input
                           id="first-name"
-                          placeholder="John"
+                          placeholder="Ariena"
                           className="mt-1"
                         />
                       </div>
@@ -375,7 +319,15 @@ const AuctionDetailUser = () => {
                         <Label htmlFor="last-name">Last Name</Label>
                         <Input
                           id="last-name"
-                          placeholder="Doe"
+                          placeholder="Kawaii"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          placeholder="nerllysu@company.com"
                           className="mt-1"
                         />
                       </div>
@@ -384,7 +336,7 @@ const AuctionDetailUser = () => {
                       <Label htmlFor="address">Address</Label>
                       <Input
                         id="address"
-                        placeholder="123 Main Street"
+                        placeholder="Jl. Lengkong Besar No 101a"
                         className="mt-1"
                       />
                     </div>
@@ -393,27 +345,14 @@ const AuctionDetailUser = () => {
                         <Label htmlFor="city">City</Label>
                         <Input
                           id="city"
-                          placeholder="New York"
+                          placeholder="Bandung City"
                           className="mt-1"
                         />
                       </div>
+
                       <div>
-                        <Label htmlFor="state">State</Label>
-                        <Select>
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Select state" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ny">New York</SelectItem>
-                            <SelectItem value="ca">California</SelectItem>
-                            <SelectItem value="tx">Texas</SelectItem>
-                            <SelectItem value="fl">Florida</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="zip">ZIP Code</Label>
-                        <Input id="zip" placeholder="10001" className="mt-1" />
+                        <Label htmlFor="zip">Kode Pos</Label>
+                        <Input id="zip" placeholder="40261" className="mt-1" />
                       </div>
                     </div>
                   </CardContent>
