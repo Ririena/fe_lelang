@@ -9,16 +9,21 @@ import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { ServerCrash } from "lucide-react";
+import { ToastCard } from "@/components/ui/toast-card";
+import { CheckCircle } from "lucide-react";
 
-const AdminLogin = () => {
+const AdminLoginPage = () => {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    setLoading(true);
 
     try {
       const res = await axios.post(
@@ -35,25 +40,36 @@ const AdminLogin = () => {
       );
 
       await login(res.data.token);
-      toast("Login Berhasil", {
-        description: (
-          <span className="text-gray-600">
-            {" "}
-            akan dialihkan ke Admin Dashboard
-          </span>
-        ),
-        position: "top-center",
-      });
+      toast.custom(() => (
+        <ToastCard
+          variant="success"
+          title="Login Berhasil"
+          description="Akan dialihkan ke halaman utama"
+        />
+      ));
 
       setTimeout(() => {
-        router.push("/admin");
+        router.push("/", { scroll: false });
       }, 2000);
     } catch (error) {
-      console.error(error.response?.data?.message || "Login Failed");
+      toast.custom(() => (
+        <ToastCard
+          variant="error"
+          title="Login Gagal"
+          description={
+            error.response?.data?.message || "Terjadi kesalahan server"
+          }
+        />
+      ));
+    } finally {
+      setLoading(false);
     }
   };
 
-
+  const isDontHaveAccount = () => {
+    router.replace("/register", { scroll: false });
+    return;
+  };
 
   return (
     <>
@@ -64,8 +80,17 @@ const AdminLogin = () => {
               Tawarin.com
             </h1>
             <h2 className="text-2xl text-black font-semibold">
-              Login in to Admin Account
+              Login to your account
             </h2>
+            <p className="text-lg font-light">
+              Or{" "}
+              <span
+                className="text-orange-400 hover:text-orange-600 hover:cursor-pointer"
+                onClick={isDontHaveAccount}
+              >
+                don't have an account?
+              </span>
+            </p>
           </div>
           <Card className="mt-8">
             <CardHeader>
@@ -82,10 +107,12 @@ const AdminLogin = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter Your Username"
                   icon={<User size={18} />}
+                  value={username}
+                  required
                 />
                 <div className="flex justify-between mt-2">
                   <Label className="text-md font-semibold">Password</Label>
-                  <p className="text-orange-500 font-thin text-md">
+                  <p className="text-orange-500 font-thin text-md cursor-pointer select-none">
                     Forgot Your Password?
                   </p>
                 </div>
@@ -95,10 +122,17 @@ const AdminLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   name="password"
                   icon={<Eye size={18} />}
+                  value={password}
+                  required
                 />
 
-                <Button variant="orange" className="mt-6 w-full">
-                  Sign In
+                <Button
+                  type="submit"
+                  variant="orange"
+                  className="mt-6 w-full"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Sign In"}
                 </Button>
               </form>
             </CardContent>
@@ -109,4 +143,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default AdminLoginPage;

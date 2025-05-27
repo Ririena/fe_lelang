@@ -39,6 +39,7 @@ const RegisterPage = () => {
           description="Password need at least 8 characters"
         />
       ));
+      setLoading(false);
       return;
     }
     try {
