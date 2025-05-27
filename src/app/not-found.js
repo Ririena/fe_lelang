@@ -5,16 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Home,
-  ArrowLeft,
-  Gavel,
-
-} from "lucide-react";
+import { Home, ArrowLeft, Gavel } from "lucide-react";
 
 export default function NotFound() {
   const router = useRouter();
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
@@ -25,12 +19,11 @@ export default function NotFound() {
             Page Not Found
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Oops! The page you're looking for doesn't exist. It might have been
-            moved, deleted, or you entered the wrong URL.
+            Oops! The page you&apos;re looking for doesn&apos;t exist. It might
+            have been moved, deleted, or you entered the wrong URL.
           </p>
         </div>
 
- 
         <Card className="mb-8">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -56,7 +49,6 @@ export default function NotFound() {
             </ul>
           </CardContent>
         </Card>
-
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
