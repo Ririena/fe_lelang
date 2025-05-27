@@ -110,7 +110,7 @@ const MyPage = () => {
 
     try {
       const res = await axios.get(
-        `http://localhost:3001/v2/items/${id_barang}`,
+        `https://be-lelang.vercel.app/v2/items/${id_barang}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -193,7 +193,7 @@ const MyPage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3001/auctions/${id_lelang}`,
+        `https://be-lelang.vercel.app/auctions/${id_lelang}`,
         {
           id_lelang: detailData.id_lelang,
           id_barang: detailData.id_barang,
@@ -233,7 +233,7 @@ const MyPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/v1/contact",
+        "https://be-lelang.vercel.app/v1/contact",
         {
           title: formData.title,
           description: formData.description,
