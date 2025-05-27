@@ -46,12 +46,12 @@ import {
 import { useRouter } from "next/navigation";
 import { Alert } from "../ui/alert";
 export function AdminSidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login/admin");
+    logout();
+    router.push("/login");
   };
   return (
     <Sidebar>

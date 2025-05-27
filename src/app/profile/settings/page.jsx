@@ -78,12 +78,10 @@ const ProfileSettingsPage = () => {
   return (
     <main className="container px-4 py-6 mx-auto max-w-7xl">
       <div className="grid gap-6 md:grid-cols-12">
-        {/* Profile Menu */}
         <div className="col-span-12">
           <ProfileMenu data={data} />
         </div>
 
-        {/* Tabs Content */}
         <div className="col-span-12">
           <ProfileEdit data={data} />
         </div>

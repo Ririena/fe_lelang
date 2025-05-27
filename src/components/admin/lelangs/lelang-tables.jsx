@@ -27,10 +27,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Router } from "lucide-react";
 import LelangEditDialog from "./lelang-edit-dialog";
 import LelangDeleteDialog from "./lelang-delete.dialog";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { usePathname, useRouter } from "next/navigation";
 
 const formatRupiah = (value) => {
   return new Intl.NumberFormat("id-ID", {
@@ -53,11 +54,15 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
   const [selectedDeleteId, setSelectedDeleteId] = useState(null);
   const [selectedLelang, setSelectedLelang] = useState(null);
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const router = useRouter();
+  const pathname = usePathname();
+  const handleDetailClick = (lelang) => {
+    setSelectedLelang(lelang);
+    router.push(`${pathname}/${lelang.id_lelang}`, { scroll: false });
+  };
 
-  // Filter & sort data based on searchQuery and filterBy
   const filteredLelangs = useMemo(() => {
     let filtered = [...dataLelang];
 
@@ -206,7 +211,9 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
               {paginatedLelangs.map((data) => (
                 <TableRow key={data.id_lelang}>
                   <TableCell>{data.id_lelang}</TableCell>
-                  <TableCell>{data.id_barang} ({data.nama_barang || "No Item Yet"})</TableCell>
+                  <TableCell>
+                    {data.id_barang} ({data.nama_barang || "No Item Yet"})
+                  </TableCell>
                   <TableCell>
                     {data.username} ({data.id_pemenang || "No Winner Yet"})
                   </TableCell>
@@ -236,7 +243,10 @@ const LelangTable = ({ searchQuery, filterBy, refreshTrigger }) => {
                         <Separator />
                         <DropdownMenuItem>Copy Auction ID</DropdownMenuItem>
                         <Separator />
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          onClick={() => handleDetailClick(data)}
+                        >
                           Auction Detail
                         </DropdownMenuItem>
                         <DropdownMenuItem

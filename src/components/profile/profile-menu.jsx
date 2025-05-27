@@ -16,13 +16,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 export const ProfileMenu = ({ data }) => {
   const router = useRouter();
 
+  const {logout} = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/login");
-  };
+  logout(); 
+  router.push('/login');
+};
+
   return (
     <>
       <Card>

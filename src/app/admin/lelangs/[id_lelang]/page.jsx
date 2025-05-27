@@ -157,7 +157,6 @@ const AdminLelangPage = () => {
       <SidebarInset>
         <HeadersInsets />
         <main className="flex-1 p-6" id="lelang-detail-pdf">
-          <BreadCrumbUrl />
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold mt-4">Data History Bids</h1>
           </div>

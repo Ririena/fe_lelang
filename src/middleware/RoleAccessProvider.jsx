@@ -5,12 +5,16 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Loading from "@/app/loading";
 
-// Define access rules for different routes
 const accessRules = [
   {
-    paths: ["/dashboard", "/admin", "/petugas"],
-    allowRoles: ["admin", "petugas"],
+    paths: ["/dashboard", "/admin"],
+    allowRoles: ["admin"],
     adminLoginPath: "/admin/login",
+  },
+  {
+    paths: ["/dashboard", "/staff"],
+    allowRoles: ["petugas"],
+    adminLoginPath: "/login",
   },
   {
     paths: ["/lelang", "/profile"],
@@ -35,7 +39,7 @@ export default function RoleAccessProvider({ children }) {
 
     // Find applicable access rule for current path
     const applicableRule = accessRules.find((rule) =>
-      rule.paths.some((path) => pathname.startsWith(path)),
+      rule.paths.some((path) => pathname.startsWith(path))
     );
 
     if (applicableRule) {

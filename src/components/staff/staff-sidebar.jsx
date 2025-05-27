@@ -46,13 +46,14 @@ import {
 import { useRouter } from "next/navigation";
 import { Alert } from "../ui/alert";
 export function StaffSidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     router.push("/login");
   };
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">

@@ -125,6 +125,11 @@ const Navbar = () => {
                       Categories
                     </Link>
                   </SheetClose>
+                  <SheetClose asChild>
+                    <Link className="hover:text-orange-500" href="/profile">
+                      Profiles
+                    </Link>
+                  </SheetClose>
 
                   <SheetClose asChild>
                     <Link href="/contact">Contact</Link>

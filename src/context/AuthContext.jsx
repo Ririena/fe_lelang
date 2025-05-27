@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const login = async (token) => {
+    setLoading(true)
     localStorage.setItem('token', token)
 
     try {
@@ -43,6 +44,8 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Failed to fetch user after login', err)
       logout()
+    } finally {
+      setLoading(false)
     }
   }
 

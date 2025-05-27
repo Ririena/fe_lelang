@@ -1,7 +1,6 @@
 "use client";
 
 import axios from "axios";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,38 +13,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  MessageSquare,
-  HelpCircle,
-  Shield,
-  CreditCard,
-  Package,
-  Users,
-  CheckCircle,
-  AlertCircle,
-} from "lucide-react";
-import Link from "next/link";
+import { CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    id_lelang: "",
+    subjek: "",
+    email: "",
   });
-  const [loading, setLoading] = useState(false);
+
+  const { token } = useAuth();
+
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("idle");
@@ -56,146 +36,127 @@ const ContactPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     setMessage("");
 
     try {
-      const res = await axios.post("/v1/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      const res = await axios.post(
+        "http://localhost:3001/v1/contact-landing",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Something went wrong");
-      }
-
+      setSubmitStatus("success");
       setMessage("Your message has been sent successfully!");
-      setFormData({ title: "", description: "", id_lelang: "" });
+      setFormData({ title: "", description: "", subjek: "", email: "" });
     } catch (err) {
-      setMessage(err.message || "Failed to send message");
+      setSubmitStatus("error");
+      setMessage(err.response?.data?.message || "Failed to send message");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Contact Us
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're here to help! Get in touch with our support team for any
-              questions, concerns, or assistance you need with your BidHub
-              experience.
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            We're here to help! Get in touch with our support team.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Send us a Message</CardTitle>
+                <CardDescription>
+                  We'll get back to you shortly.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {submitStatus === "success" && (
+                  <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <p className="font-medium text-green-800">
+                        Message sent successfully!
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {submitStatus === "error" && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-red-600" />
+                    <div>
+                      <p className="font-medium text-red-800">{message}</p>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <Label htmlFor="title">Name *</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={handleChange}
+                      required
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email Address *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="subjek">Subject *</Label>
+                    <Input
+                      id="subjek"
+                      value={formData.subjek}
+                      onChange={handleChange}
+                      required
+                      className="mt-1"
+                      placeholder="Brief description"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="description">Message *</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 min-h-[120px]"
+                      placeholder="Tell us more about your issue..."
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-orange-600 hover:bg-orange-700"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                  <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as
-                    possible.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {submitStatus === "success" && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                      <div>
-                        <p className="font-medium text-green-800">
-                          Message sent successfully!
-                        </p>
-                        <p className="text-sm text-green-600">
-                          We'll get back to you within 24 hours.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Full Name *</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) =>
-                            handleInputChange("name", e.target.value)
-                          }
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) =>
-                            handleInputChange("email", e.target.value)
-                          }
-                          required
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-
-                  
-
-                    <div>
-                      <Label htmlFor="subject">Subject *</Label>
-                      <Input
-                        id="subject"
-                        value={formData.subject}
-                        onChange={(e) =>
-                          handleInputChange("subject", e.target.value)
-                        }
-                        required
-                        className="mt-1"
-                        placeholder="Brief description of your inquiry"
-                      />
-                    </div>
-
-
-                    <div>
-                      <Label htmlFor="message">Message *</Label>
-                      <Textarea
-                        id="message"
-                        value={formData.message}
-                        onChange={(e) =>
-                          handleInputChange("message", e.target.value)
-                        }
-                        required
-                        className="mt-1 min-h-[120px]"
-                        placeholder="Please provide as much detail as possible about your inquiry..."
-                      />
-                    </div>
-
-                    <Button
-                      type="submit"
-                      className="w-full bg-orange-600 hover:bg-orange-700"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Sending..." : "Send Message"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            
-            </div>
-            <div className="space-y-6">
-                    <Card>
+          <div className="space-y-6">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="h-5 w-5" />
@@ -204,29 +165,25 @@ const ContactPage = () => {
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm">Monday - Friday</span>
-                  <span className="text-sm font-medium">9:00 AM - 6:00 PM EST</span>
+                  <span className="text-sm">Mon - Fri</span>
+                  <span className="text-sm font-medium">9:00 AM - 6:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm">Saturday</span>
-                  <span className="text-sm font-medium">10:00 AM - 4:00 PM EST</span>
+                  <span className="text-sm font-medium">
+                    10:00 AM - 4:00 PM
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm">Sunday</span>
                   <span className="text-sm font-medium">Closed</span>
                 </div>
-                <Separator className="my-3" />
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>Live chat available 24/7</span>
-                </div>
               </CardContent>
             </Card>
-            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -9,10 +9,18 @@ import axios from "axios";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ToastCard } from "@/components/ui/toast-card";
-
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 const RegisterPage = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loadingLocal, setLoadingLocal] = useState(false);
+  const { user, loading } = useAuth();
+  
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace("/", { scroll: false });
+    }
+  }, [user, loading]);
 
   const [registerForm, setRegisterForm] = useState({
     username: "",
@@ -29,7 +37,7 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingLocal(true);
 
     if (registerForm.password.length < 8) {
       toast.custom(() => (
@@ -39,7 +47,7 @@ const RegisterPage = () => {
           description="Password need at least 8 characters"
         />
       ));
-      setLoading(false);
+      setLoadingLocal(false);
       return;
     }
     try {
@@ -73,7 +81,7 @@ const RegisterPage = () => {
       });
     }
 
-    setLoading(false);
+    setLoadingLocal(false);
   };
 
   const isHaveAccount = () => {
@@ -140,9 +148,9 @@ const RegisterPage = () => {
                   type="submit"
                   variant="orange"
                   className="mt-6 w-full"
-                  disabled={loading}
+                  disabled={loadingLocal}
                 >
-                  {loading ? "Process..." : "Register"}
+                  {loadingLocal ? "Process..." : "Register"}
                 </Button>
               </form>
             </CardContent>
