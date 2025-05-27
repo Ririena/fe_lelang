@@ -41,7 +41,7 @@ export function StaffItemTables({ trigger }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3001/items/${id}`, {
+      const res = await axios.delete(`https://be-lelang.vercel.app/items/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +57,7 @@ export function StaffItemTables({ trigger }) {
 
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/items", {
+      const res = await axios.get("https://be-lelang.vercel.app/items", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

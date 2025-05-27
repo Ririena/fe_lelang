@@ -18,7 +18,7 @@ const ProfileSettingsPage = () => {
 
   const fetchDataUser = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/profile", {
+      const res = await axios.get("https://be-lelang.vercel.app/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

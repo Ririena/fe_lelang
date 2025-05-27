@@ -40,7 +40,7 @@ export function DashboardContent({ listHistory }) {
   async function getCount() {
     try {
       const resUser = await axios.get(
-        "http://localhost:3001/v1/user/masyarakat",
+        "https://be-lelang.vercel.app/v1/user/masyarakat",
         {
           headers: {
             "Content-Type": "application/json",

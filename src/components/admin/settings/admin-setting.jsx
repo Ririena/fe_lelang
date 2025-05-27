@@ -75,7 +75,7 @@ const AdminSetting = () => {
     }
     try {
       const res = await axios.put(
-        "http://localhost:3001/update",
+        "https://be-lelang.vercel.app/update",
         {
           username: formData.username,
           password: formData.password,

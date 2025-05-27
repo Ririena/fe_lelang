@@ -28,7 +28,7 @@ const PageLelang = () => {
 
   async function init() {
     try {
-      const res = await axios.get("http://localhost:3001/auctions", {
+      const res = await axios.get("https://be-lelang.vercel.app/auctions", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -46,7 +46,7 @@ const PageLelang = () => {
 
   async function getCategory() {
     try {
-      const res = await axios.get("http://localhost:3001/v2/categories", {
+      const res = await axios.get("https://be-lelang.vercel.app/v2/categories", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

@@ -60,7 +60,7 @@ const HistoryTables = ({ searchQuery, filter }) => {
 
   async function init() {
     try {
-      const res = await axios.get(`http://localhost:3001/auction-histories`, {
+      const res = await axios.get(`https://be-lelang.vercel.app/auction-histories`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

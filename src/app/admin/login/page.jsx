@@ -27,7 +27,7 @@ const AdminLoginPage = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/login",
+        "https://be-lelang.vercel.app/login",
         {
           username,
           password,

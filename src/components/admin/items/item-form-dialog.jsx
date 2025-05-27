@@ -51,7 +51,7 @@ export default function ItemFormDialog({ onItemAdded }) {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/v2/categories", {
+        const res = await axios.get("https://be-lelang.vercel.app/v2/categories", {
           headers: { "Content-Type": "application/json" },
         });
         setCategories(res.data.categories || []);
@@ -112,7 +112,7 @@ export default function ItemFormDialog({ onItemAdded }) {
       const image_url = await uploadImage(formData.gambar);
 
       await axios.post(
-        "http://localhost:3001/v2/items",
+        "https://be-lelang.vercel.app/v2/items",
         {
           nama_barang: formData.nama_barang,
           harga_awal: formData.harga_awal,

@@ -23,7 +23,7 @@ const ProfileEdit = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.put(`http://localhost:3001/update`, updateForm, {
+      const res = await axios.put(`https://be-lelang.vercel.app/update`, updateForm, {
         headers: {
           Authorization: `bearer ${token}`,
           "Content-Type": "application/json",

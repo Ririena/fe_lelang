@@ -46,7 +46,7 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/v2/categories", {
+        const res = await axios.get("https://be-lelang.vercel.app/v2/categories", {
           headers: { "Content-Type": "application/json" },
         });
         setCategories(res.data.categories || []);
@@ -88,7 +88,7 @@ const ItemEditDialog = ({ open, onOpenChange, item, onUpdated }) => {
       };
 
       await axios.put(
-        `http://localhost:3001/v2/items/${item.id_barang}`,
+        `https://be-lelang.vercel.app/v2/items/${item.id_barang}`,
         updatedData,
         {
           headers: {

@@ -18,7 +18,7 @@ const ProfileAuctionsPage = () => {
 
   const fetchDataUser = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/profile", {
+      const res = await axios.get("https://be-lelang.vercel.app/profile", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -35,7 +35,7 @@ const ProfileAuctionsPage = () => {
 
   const fetchOffers = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/v1/my-offer", {
+      const res = await axios.get("https://be-lelang.vercel.app/v1/my-offer", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const ProfileAuctionsPage = () => {
 
   const fetchBids = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/v1/my-bids", {
+      const res = await axios.get("https://be-lelang.vercel.app/v1/my-bids", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

@@ -120,7 +120,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:3001/v2/items/${id}`, {
+      const res = await axios.delete(`https://be-lelang.vercel.app/v2/items/${id}`, {
         headers: {
           Authorization: `bearer ${token}`,
         },
@@ -156,7 +156,7 @@ export default function ItemTables({ refreshTrigger, searchQuery, filterBy }) {
 
   async function getAll() {
     try {
-      const res = await axios.get("http://localhost:3001/v2/itemsAll", {
+      const res = await axios.get("https://be-lelang.vercel.app/v2/itemsAll", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `bearer ${token}`,

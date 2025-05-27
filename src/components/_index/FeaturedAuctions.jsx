@@ -14,7 +14,7 @@ const FeaturedAuctions = () => {
   useEffect(() => {
     if (!loading && token) {
       axios
-        .get("http://localhost:3001/auctions/featured", {
+        .get("https://be-lelang.vercel.app/auctions/featured", {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

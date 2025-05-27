@@ -30,7 +30,7 @@ const LelangDeleteDialog = ({
     setError(null);
 
     try {
-      await axios.delete(`http://localhost:3001/auctions/${idLelang}`, {
+      await axios.delete(`https://be-lelang.vercel.app/auctions/${idLelang}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

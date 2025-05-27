@@ -36,7 +36,7 @@ export function AddItemDialog({ open, onOpenChange, onItemAdded }) {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:3001/items",
+        "https://be-lelang.vercel.app/items",
         {
           name: formData.name,
           category: formData.category,

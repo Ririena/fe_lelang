@@ -94,7 +94,7 @@ const LelangEditDialog = ({ open, onOpenChange, lelang, onUpdated }) => {
       }
 
       await axios.put(
-        `http://localhost:3001/auctions/${lelang.id_lelang}`,
+        `https://be-lelang.vercel.app/auctions/${lelang.id_lelang}`,
         updatedData,
         {
           headers: {

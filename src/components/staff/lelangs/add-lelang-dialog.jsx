@@ -35,7 +35,7 @@ export function AddLelangDialog({ open, onOpenChange, onLelangAdded }) {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get("http://localhost:3001/items", {
+        const res = await axios.get("https://be-lelang.vercel.app/items", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -55,7 +55,7 @@ export function AddLelangDialog({ open, onOpenChange, onLelangAdded }) {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:3001/lelangs",
+        "https://be-lelang.vercel.app/lelangs",
         {
           item_id: parseInt(formData.item_id),
           start_price: parseInt(formData.start_price),

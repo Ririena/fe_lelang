@@ -19,7 +19,7 @@ const ContactContent = () => {
 
   async function init() {
     try {
-      const res = await axios.get(`http://localhost:3001/v1/contact`, {
+      const res = await axios.get(`https://be-lelang.vercel.app/v1/contact`, {
         headers: {
           "Content-Type": `application/json`,
           Authorization: `Bearer ${token}`,
