@@ -530,7 +530,7 @@ const MyPage = () => {
                             required
                           />
                         </div>
-                        <Button type="submit" disabled={isContactSubmitting}>
+                        <Button className="mt-4 w-full" variant="orange" type="submit" disabled={isContactSubmitting}>
                           {isContactSubmitting ? "Sending..." : "Send Message"}
                         </Button>
                       </form>
